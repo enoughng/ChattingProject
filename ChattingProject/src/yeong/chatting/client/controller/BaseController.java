@@ -27,7 +27,7 @@ public class BaseController  implements Initializable{
 	
 	protected ObjectInputStream ois;
 	protected ObjectOutputStream oos;
-	protected Map<String,CommonAction> commandMap;
+	private Map<String,CommonAction> commandMap;
 	private CommonAction action;
 	
 	@Override

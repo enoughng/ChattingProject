@@ -10,5 +10,6 @@ public class CommonPathAddress {
 	public static final String CreateRoomLayout = "../view/CreateRoomLayout.fxml";
 	public static final String ChattingRoomLayout = "../view/ChattingRoomLayout.fxml";
 	
-	
+	// 서버 레이아웃 경로
+	public static final String ServerMainLayout = "../view/MainLayout.fxml";
 }
