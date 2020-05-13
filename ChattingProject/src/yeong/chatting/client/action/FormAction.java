@@ -20,23 +20,24 @@ import yeong.chatting.util.Log;
 public class FormAction implements CommonAction {
 
 	@Override
-	public void formAction(Window primaryStage, String url) {
+	public void action(ActionInfo info) {
 		Log.i(getClass(),"RegistryAction ½ÇÇà");
-		addForm(primaryStage, url);
+		addForm(info);
 	}
 
-	private void addForm(Window primaryStage, String url) {
+	private void addForm(ActionInfo action) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource(url));
+			FXMLLoader loader = new FXMLLoader(action.getURL());
 			Parent regiForm = (Parent)loader.load();
 			Scene scene = new Scene(regiForm);
 			Stage stage = new Stage();
 
 			stage.setScene(scene);
-			if(url.equals(CommonPathAddress.RegistryLayout)) {
-				stage.initOwner(primaryStage);
+			if(action.getAbsoluteDestination().indexOf(getClass().getResource(CommonPathAddress.RegistryLayout).toString())!=-1) {
+				stage.initOwner(action.getPrimaryStage());
 				stage.initModality(Modality.APPLICATION_MODAL);
 			}
+			stage.setResizable(false);
 			stage.show();
 
 		} catch (IOException e) {

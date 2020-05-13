@@ -43,13 +43,13 @@
                <children>
                   <FlowPane alignment="CENTER" hgap="20.0" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="30.0" prefWidth="30.0" text="ID :" />
+                        <Label alignment="CENTER" prefHeight="30.0" prefWidth="40.0" text="ID :" />
                         <TextField fx:id="idTf" prefHeight="30.0" prefWidth="200.0" promptText="ID" />
                      </children>
                   </FlowPane>
                   <FlowPane alignment="CENTER" hgap="20.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                      <children>
-                        <Label alignment="CENTER" prefHeight="30.0" prefWidth="30.0" text="PW :" />
+                        <Label alignment="CENTER" prefHeight="30.0" prefWidth="40.0" text="PW :" />
                         <PasswordField fx:id="pwPf" prefHeight="30.0" prefWidth="200.0" promptText="PASSWORD" />
                      </children>
                   </FlowPane>

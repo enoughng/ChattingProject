@@ -1,5 +1,7 @@
 package yeong.chatting.server.action;
 
+import yeong.chatting.client.action.ActionInfo;
+
 public interface CommonAction {
-	public void action();
+	public void action(ActionInfo info);
 }

@@ -1,11 +1,17 @@
 package yeong.chatting.model;
 
-public class Member {
+import java.io.Serializable;
+
+public class Member implements Serializable{
 	private String id;
 	private String password;
 	private String name;
 	private String email;
 	
+	public Member(String id, String password) {
+		this.id = id;
+		this.password = password;
+	}
 	public Member(String id, String password, String name) {
 		this.id = id;
 		this.password = password;

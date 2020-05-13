@@ -6,6 +6,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.controller.BaseController;
 import yeong.chatting.model.Member;
 import yeong.chatting.util.CommonPathAddress;
@@ -20,12 +21,12 @@ public class ChattingRoomController extends BaseController{
 	
 	@FXML
 	private void send() {
-		action("Send");
+		action(new ActionInfo("Send",sendBtn));
 	}
 	
 	@FXML
 	private void exit() {
-		formAction("Form",exitBtn,CommonPathAddress.WaitingRoomLayout);
+		action(new ActionInfo("Form",exitBtn,CommonPathAddress.WaitingRoomLayout));
 		Stage stage = (Stage)exitBtn.getScene().getWindow();
 		stage.close();
 	}

@@ -17,7 +17,7 @@ public class CommandMap {
 	static {
 		Properties pro = new Properties();
 		try {
-			pro.load(new FileInputStream("src/yeong/chatting/server/properties/ServerAction.properties"));
+			pro.load(new FileInputStream("ChattingProject/src/yeong/chatting/server/properties/ServerAction.properties"));
 			Enumeration<Object> keys = pro.keys();
 			while(keys.hasMoreElements()) {
 				String key = (String)keys.nextElement();
@@ -44,7 +44,6 @@ public class CommandMap {
 	
 	
 	public static Map<String,CommonAction> getCommandMap() {
-		Log.i("map size : " + commandMap.size());
 		return commandMap;
 	}
 	

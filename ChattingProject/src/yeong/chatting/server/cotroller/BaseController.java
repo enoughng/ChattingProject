@@ -6,14 +6,15 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import javafx.fxml.Initializable;
+import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.server.action.CommonAction;
 import yeong.chatting.server.thread.ServerThread;
 import yeong.chatting.util.CommandMap;
+import yeong.chatting.util.Log;
 
 public class BaseController implements Initializable{
 	
 	private Map<String,CommonAction> commandMap = new HashMap<>();
-	private CommonAction action;
 	protected ServerThread st;
 	
 	@Override
@@ -25,9 +26,9 @@ public class BaseController implements Initializable{
 	
 	
 	
-	protected void action(String command) {
-		CommonAction action = (CommonAction)commandMap.get(command);
-		action.action();
+	protected void action(ActionInfo info) {
+		CommonAction action = (CommonAction)commandMap.get(info.getCommand());
+		action.action(info);
 	}
 	
 	private void initCommand() {

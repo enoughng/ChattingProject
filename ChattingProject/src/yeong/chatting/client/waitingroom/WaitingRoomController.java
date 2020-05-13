@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
 import yeong.chatting.client.controller.BaseController;
 import yeong.chatting.client.util.ThreadUtil;
@@ -32,18 +33,18 @@ public class WaitingRoomController extends BaseController {
 	
 	@FXML
 	private void create() {
-		formAction("Form",createBtn,CommonPathAddress.CreateRoomLayout);
+		action(new ActionInfo("Form",createBtn,CommonPathAddress.CreateRoomLayout));
 		Stage stage = (Stage)createBtn.getScene().getWindow();
 		stage.close();
 	}
 	
 	@FXML
 	private void enter() {
-		formAction("EnterRoom",enterBtn,CommonPathAddress.ChattingRoomLayout);
+		action(new ActionInfo("EnterRoom",enterBtn,CommonPathAddress.ChattingRoomLayout));
 	}
 	
 	@FXML
 	private void logout() {
-		formAction("Go",logoutBtn,CommonPathAddress.LoginLayout);
+		action(new ActionInfo("Go",logoutBtn,CommonPathAddress.LoginLayout));
 	}
 }

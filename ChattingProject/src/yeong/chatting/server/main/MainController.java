@@ -1,10 +1,14 @@
-package yeong.chatting.server.cotroller;
+package yeong.chatting.server.main;
+
+import java.io.FileInputStream;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
+import yeong.chatting.client.action.ActionInfo;
+import yeong.chatting.server.cotroller.BaseController;
 import yeong.chatting.util.Log;
 
 /**
@@ -23,25 +27,9 @@ public class MainController extends BaseController {
 	
 	@FXML
 	private void toggle() {
-		if(toggle.getText().equals("서버 구동")) {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					toggle.setText("서버 종료");
-				}
-			});
-			st.start();
-			Log.i(getClass(),"서버구동 완료");
-		} else {
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					toggle.setText("서버 구동");
-				}
-			});
-			st.close();
-			Log.i(getClass(),"서버종료 완료");
-		}
+		ActionInfo start= new ActionInfo("StartButton", toggle);
+		start.setCons(log, toggle, exit);
+		action(start);
  	}
 	
 	@FXML

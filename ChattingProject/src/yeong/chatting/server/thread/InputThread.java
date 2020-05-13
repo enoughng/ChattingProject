@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import yeong.chatting.model.BaseModel;
+import yeong.chatting.model.Message;
 import yeong.chatting.util.Log;
 
 public class InputThread {
@@ -29,8 +29,8 @@ public class InputThread {
 					oos = new ObjectOutputStream(socket.getOutputStream());
 					while(!isStop) {	
 						Log.i(getClass(),"객체 수신중");
-						BaseModel model = (BaseModel)ois.readObject();
-						Log.i("수신된 문자 : " + model.toString());
+						Message message = (Message)ois.readObject();
+						Log.i("수신된 문자 : " + message.toString());
 					}
 				} catch(IOException e) {
 					try {

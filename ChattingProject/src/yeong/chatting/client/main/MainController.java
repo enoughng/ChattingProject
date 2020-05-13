@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
 import yeong.chatting.client.controller.BaseController;
 import yeong.chatting.client.util.CommandMap;
@@ -45,31 +46,23 @@ public class MainController extends BaseController {
 	Button exitBtn;
 	@FXML
 	Button registryBtn;
-	
-	/**
-	 * 실행될때 1회 초기화 BaseController를 상속받아 기본적인 Map, Stream을 받아온다.
-	 */	
-//	@Override
-//	public void initialize(URL location, ResourceBundle resources) {
-//		initStream();
-//		initCommand();
-//		Log.i("map size : " + commandMap.size());
-//	}
-	
+
 	
 	@FXML
 	public void login() {
-		formAction("Login",loginBtn, CommonPathAddress.ClientWaitingRoomLayout);
+		ActionInfo loginAction = new ActionInfo("Login",loginBtn,CommonPathAddress.ClientWaitingRoomLayout);
+		loginAction.setCons(idTf, pwPf);
+		action(loginAction);
 	}
 	
 	@FXML 
 	public void exit() {
-		action("Exit");
+		action(new ActionInfo("Exit",exitBtn));
 	}
 	
 	@FXML
 	public void registry() {
-		formAction("Form",registryBtn, CommonPathAddress.RegistryLayout);
+		action(new ActionInfo("Form",registryBtn,CommonPathAddress.RegistryLayout));
 	}
 
 }

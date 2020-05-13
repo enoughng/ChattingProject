@@ -33,7 +33,8 @@ public class Log {
 	}
 	
 	public static void e(Class<?> clazz, Exception e) {
-		System.err.println(clazz.getSimpleName() + " : " + e.getMessage());
+		System.err.println(clazz.getSimpleName() + " : ");
+		e.printStackTrace();
 		System.exit(0);
 	}
 	public static void e(Class<?> clazz, String msg, Exception e) {

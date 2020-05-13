@@ -19,8 +19,8 @@
    <bottom>
       <FlowPane alignment="CENTER_RIGHT" hgap="10.0" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="createBtn" mnemonicParsing="false" onAction="#create" prefHeight="30.0" prefWidth="75.0" text="방만들기" />
-            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="75.0" text="취소" />
+            <Button fx:id="createBtn" mnemonicParsing="false" onAction="#create" prefHeight="30.0" prefWidth="90.0" text="방만들기" />
+            <Button fx:id="cancelBtn" mnemonicParsing="false" onAction="#cancel" prefHeight="30.0" prefWidth="90.0" text="취소" />
          </children>
          <BorderPane.margin>
             <Insets />
@@ -42,7 +42,7 @@
          <children>
             <FlowPane alignment="CENTER" hgap="10.0" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="75.0" text="방 제목" />
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="110.0" text="방 제목" />
                   <TextField fx:id="room_title" prefHeight="40.0" prefWidth="200.0" />
                </children>
                <GridPane.margin>
@@ -55,7 +55,7 @@
             <FlowPane alignment="CENTER" hgap="10.0" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
                <children>
                   <CheckBox fx:id="room_pwdchk" mnemonicParsing="false" prefHeight="10.0" prefWidth="10.0" />
-                  <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="40.0" prefWidth="75.0" text="방 비밀번호" />
+                  <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="40.0" prefWidth="110.0" text="방 비밀번호" />
                   <PasswordField fx:id="room_password" prefHeight="40.0" prefWidth="200.0" />
                </children>
             </FlowPane>

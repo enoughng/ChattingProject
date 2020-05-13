@@ -5,18 +5,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import yeong.chatting.model.BaseModel;
 import yeong.chatting.util.Log;
 
 public class ServerThread extends Thread{
 
-	private  Runnable initThread;
+	private Runnable initThread;
 	private ServerSocket server;
 	private Socket socket;
 	private ObjectOutputStream oos;
@@ -24,14 +22,23 @@ public class ServerThread extends Thread{
 
 	private static ExecutorService threadPool;
 
-	public static ArrayList<InputThread> inputThreads= new ArrayList<>();
+	public static Vector<InputThread> serverThreads = new Vector<>();
 
 	public ServerThread() {
 		init();
-		threadPool = Executors.newCachedThreadPool();
 	}
 
 	public void start() {
+		try {
+			server = new ServerSocket(9500);
+			Log.i(getClass(),"서버 준비 완료");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+//			if(!server.isClosed()) {
+//				close();
+//			}
+		}
+		threadPool = Executors.newCachedThreadPool();
 		threadPool.execute(initThread);
 	}
 
@@ -54,21 +61,16 @@ public class ServerThread extends Thread{
 
 
 	private void init() {
-		try {
-			server = new ServerSocket(9500);
-			Log.i(getClass(),"서버 준비 완료");
-		} catch (IOException e1) {
-			if(!server.isClosed()) {
-				close();
-			}
-		}
+		
 		initThread = new Runnable() {
 			@Override
 			public void run() {
 				while(!currentThread().isInterrupted()) {
 					try {
+						Log.i("객체 수신준비 완료");
 						socket = server.accept();
-						inputThreads.add(new InputThread(socket));
+						serverThreads.add(new InputThread(socket));
+						Log.i("객체 수신 완료");
 					} 
 					catch (Exception e) {
 						if(!server.isClosed()) {

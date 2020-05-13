@@ -17,7 +17,7 @@ public class CommandMap {
 		Properties properties = new Properties();
 		try {
 //			properties.load(new FileInputStream(ClientMain.class.getResource("properties/ClientAction.properties").toString()));
-			properties.load(new FileInputStream("src/yeong/chatting/client/properties/ClientAction.properties"));
+			properties.load(new FileInputStream("ChattingProject/src/yeong/chatting/client/properties/ClientAction.properties"));
 			Enumeration keys =  properties.keys();
 			while(keys.hasMoreElements()) {
 				String key = (String)keys.nextElement();

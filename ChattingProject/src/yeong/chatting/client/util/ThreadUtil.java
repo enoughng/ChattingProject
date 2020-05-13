@@ -25,7 +25,7 @@ public class ThreadUtil {
 	static {
 		Log.i("ThreadUtil static 초기화자 실행");
 		Thread socketThread = new Thread(new socketImpl());
-		socketThread.setDaemon(false);
+		socketThread.setDaemon(true);
 		socketThread.start();
 		Log.i("ThreadUtil static 초기화자 완료");
 	}
@@ -38,7 +38,7 @@ public class ThreadUtil {
 		return oos;
 	}
 	
-	public void close() {
+	public static void close() {
 		if(ois != null) try {ois.close();} catch (IOException e) { Log.e("ois close 실패"); }
 		if(oos != null) try {oos.close();} catch (IOException e) { Log.e("oos close 실패"); }
 	}

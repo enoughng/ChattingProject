@@ -1,6 +1,6 @@
 package yeong.chatting.model;
 
-public class RoomInfo extends BaseModel {
+public class RoomInfo {
 	private int room_num;
 	private String room_title;
 	private String room_pwd;

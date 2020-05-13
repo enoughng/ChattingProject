@@ -15,7 +15,7 @@
          <children>
             <Label alignment="CENTER" prefHeight="15.0" prefWidth="200.0" text="현재 접속자(인원)">
                <FlowPane.margin>
-                  <Insets bottom="10.0" />
+                  <Insets bottom="10.0" top="5.0" />
                </FlowPane.margin>
             </Label>
             <ListView fx:id="memberList" prefHeight="200.0" prefWidth="200.0" />
@@ -48,19 +48,16 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
    <center>
-      <FlowPane alignment="TOP_CENTER" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" vgap="10.0" BorderPane.alignment="CENTER">
+      <FlowPane alignment="TOP_CENTER" maxWidth="400.0" orientation="VERTICAL" prefHeight="360.0" prefWidth="400.0" vgap="10.0" BorderPane.alignment="CENTER">
          <children>
             <Label alignment="CENTER" prefHeight="15.0" prefWidth="340.0" text="현재 방 정보" />
-            <TableView fx:id="roomList" prefHeight="332.0" prefWidth="340.0">
+            <TableView fx:id="roomList" prefHeight="320.0" prefWidth="340.0">
               <columns>
-                <TableColumn prefWidth="75.0" text="방 번호" />
-                <TableColumn prefWidth="140.0" text="방 제목" />
-                  <TableColumn prefWidth="61.0" text="방 인원수" />
-                  <TableColumn minWidth="0.0" prefWidth="62.0" text="방 상태" />
+                <TableColumn prefWidth="75.0" resizable="false" text="방 번호" />
+                <TableColumn prefWidth="124.0" resizable="false" text="방 제목" />
+                  <TableColumn prefWidth="77.0" resizable="false" text="방 인원수" />
+                  <TableColumn minWidth="0.0" prefWidth="62.0" resizable="false" text="방 상태" />
               </columns>
-               <FlowPane.margin>
-                  <Insets right="20.0" />
-               </FlowPane.margin>
             </TableView>
          </children>
       </FlowPane>

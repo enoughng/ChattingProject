@@ -14,12 +14,13 @@ public class ClientMain extends Application{
 		FXMLLoader loader = new FXMLLoader(getClass().getResource(CommonPathAddress.LoginLayout));
 		Parent root = (Parent)loader.load();
 		Scene scene = new Scene(root);
+		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
 	
 	/**
-	 * chatProject ½ÇÇà
+	 * chatProject ï¿½ï¿½ï¿½ï¿½
 	 */
 	public static void main(String[] args) {
 		launch(args);

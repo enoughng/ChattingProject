@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.controller.BaseController;
 import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
@@ -49,14 +50,14 @@ public class RegistryController extends BaseController{
 	
 	@FXML
 	private void registry() {
-		action("Registry");
+		action(new ActionInfo("Registry",registryBtn));
 		Stage stage = (Stage)registryBtn.getScene().getWindow();
 		stage.close();
 	}
 	
 	@FXML
 	private void idCheck() {
-		action("IDCheck");
+		action(new ActionInfo("IDCheck",idchkBtn));
 	}
 	
 }

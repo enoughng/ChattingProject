@@ -1,5 +1,7 @@
 package yeong.chatting.model;
 
+import java.io.Serializable;
+
 import yeong.chatting.util.ProtocolType;
 
 /**
@@ -10,41 +12,31 @@ import yeong.chatting.util.ProtocolType;
  * @변경이력 :
  * @프로그램 설명 : ChatProject에서 사용하는 프로토콜이다. (Builder 패턴 사용)
  */
-public class Message extends BaseModel {
+public class Message implements Serializable{
 	//필수인자
+	ProtocolType protocol;
 	private final Member from;
 	
 	//선택인자
 	private Member to;
 	private String msg;
 	private RoomInfo rInfo;
-
 	
 	public ProtocolType getProtocol() {
 		return protocol;
 	}
-
-
 	public Member getFrom() {
 		return from;
 	}
-
-
 	public Member getTo() {
 		return to;
 	}
-
-
 	public String getMsg() {
 		return msg;
 	}
-
-
 	public RoomInfo getrInfo() {
 		return rInfo;
 	}
-
-
 	public static class Builder {
 		
 		ProtocolType protocol;
