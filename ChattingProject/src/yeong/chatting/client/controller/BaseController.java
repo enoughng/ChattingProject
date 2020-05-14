@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.util.ClientThread;
 import yeong.chatting.client.util.CommandMap;
 import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.model.Member;
@@ -27,16 +28,11 @@ import yeong.chatting.util.Log;
  */
 public class BaseController  implements Initializable{
 	
-	protected ObjectInputStream ois;
-	protected ObjectOutputStream oos;
 	private Map<String,CommonAction> commandMap;
 	private CommonAction action;
-	
-	public static Member currnetMember;
-	
+		
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		initStream();
 		initCommand();
 	}
 	
@@ -45,10 +41,11 @@ public class BaseController  implements Initializable{
 		action = commandMap.get(info.getCommand());
 		action.action(info);
 	}
-
-	private void initStream() {
-		ois = ThreadUtil.getOis();
-		oos = ThreadUtil.getOos();
+	
+	public static void goAction(Control con, String url) {
+		if(url == null) return;
+		Map<String,CommonAction> map = CommandMap.getCommandMap();
+		map.get(url).action(new ActionInfo("Go",con,url));
 	}
 	
 	private void initCommand() {

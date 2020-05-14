@@ -50,7 +50,7 @@ public class MainController extends BaseController {
 	
 	@FXML
 	public void login() {
-		ActionInfo loginAction = new ActionInfo("Login",loginBtn,CommonPathAddress.ClientWaitingRoomLayout);
+		ActionInfo loginAction = new ActionInfo("Login",loginBtn);
 		loginAction.setCons(idTf, pwPf);
 		action(loginAction);
 	}

@@ -25,34 +25,27 @@ import yeong.chatting.util.ProtocolType;
  * @프로그램 설명 : 로그인 작업에 대한 요청 
  */
 public class LoginAction implements CommonAction {
-	
-	private ObjectInputStream ois;
-	private ObjectOutputStream oos;
 
 	@Override
 	public void action(ActionInfo info) {
 		checkInfo(info); // 
 	}
 	private void checkInfo(ActionInfo info) {
-		ois = ThreadUtil.getOis();
-		oos = ThreadUtil.getOos();
 		
 		TextInputControl idTf = (TextField)info.getCons()[0];
 		TextInputControl pwPf = (PasswordField)info.getCons()[1];
 		String inputId = idTf.getText(); 
 		String inputPw = pwPf.getText();
 		
-		Message m = new Message.Builder(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw))
+		Message m = new Message.mBuilder(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw))
 				.build();
 		
 		try {
 			oos.writeObject(m);
+			Log.i(getClass(),"로그인 요청이 성공적으로 이루어졌습니다.");
 		} catch (IOException e) {
 			Log.e(getClass(), e);
 		}
-		
-		Thread thread = new Thread(new ClientThread(ois, oos, info));
-		thread.start();
 	}
 	
 	

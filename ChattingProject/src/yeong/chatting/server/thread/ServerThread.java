@@ -17,8 +17,6 @@ public class ServerThread extends Thread{
 	private Runnable initThread;
 	private ServerSocket server;
 	private Socket socket;
-	private ObjectOutputStream oos;
-	private ObjectInputStream ois;
 
 	private static ExecutorService threadPool;
 
@@ -44,6 +42,10 @@ public class ServerThread extends Thread{
 
 	public void close() {
 		try {
+			for(InputThread t :serverThreads) {
+				serverThreads.remove(t);
+			}
+			
 			if(server != null && !server.isClosed()) {
 				server.close();
 			}
@@ -61,7 +63,6 @@ public class ServerThread extends Thread{
 
 
 	private void init() {
-		
 		initThread = new Runnable() {
 			@Override
 			public void run() {

@@ -54,6 +54,7 @@ public class ThreadUtil {
 				Log.i("ThreadUtil : 3俺 积己 己傍");
 			} catch (IOException e) {
 				Log.e("ThreadUtil : 家南积己 坷幅" + e.getMessage());
+				System.exit(0);
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
 
 public class CommandMap {
@@ -17,7 +18,7 @@ public class CommandMap {
 		Properties properties = new Properties();
 		try {
 //			properties.load(new FileInputStream(ClientMain.class.getResource("properties/ClientAction.properties").toString()));
-			properties.load(new FileInputStream("ChattingProject/src/yeong/chatting/client/properties/ClientAction.properties"));
+			properties.load(new FileInputStream(CommonPathAddress.clientActionProperties));
 			Enumeration keys =  properties.keys();
 			while(keys.hasMoreElements()) {
 				String key = (String)keys.nextElement();

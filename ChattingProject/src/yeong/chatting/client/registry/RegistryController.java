@@ -50,7 +50,10 @@ public class RegistryController extends BaseController{
 	
 	@FXML
 	private void registry() {
-		action(new ActionInfo("Registry",registryBtn));
+		ActionInfo registryAction = new ActionInfo("Registry",registryBtn);
+		registryAction.setCons(id, nickname, password, passwordCheck, email);
+		action(registryAction);
+		
 		Stage stage = (Stage)registryBtn.getScene().getWindow();
 		stage.close();
 	}

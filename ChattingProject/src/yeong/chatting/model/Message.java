@@ -37,7 +37,7 @@ public class Message implements Serializable{
 	public RoomInfo getrInfo() {
 		return rInfo;
 	}
-	public static class Builder {
+	public static class mBuilder {
 		
 		ProtocolType protocol;
 		private final Member from;
@@ -46,22 +46,22 @@ public class Message implements Serializable{
 		private String msg;
 		private RoomInfo rInfo;
 		
-		public Builder(ProtocolType protocol, Member from) {
+		public mBuilder(ProtocolType protocol, Member from) {
 			this.protocol = protocol;
 			this.from = from;
 		}
 		
-		public Builder to(Member to) {
+		public mBuilder to(Member to) {
 			this.to = to;
 			return this;
 		}
 		
-		public Builder msg(String msg) {
+		public mBuilder msg(String msg) {
 			this.msg = msg;
 			return this;
 		}
 		
-		public Builder rInfo(RoomInfo rInfo) {
+		public mBuilder rInfo(RoomInfo rInfo) {
 			this.rInfo = rInfo;
 			return this;
 		}
@@ -72,12 +72,12 @@ public class Message implements Serializable{
 	}
 	
 	
-	public Message(Builder mBuilder) {
+	public Message(mBuilder mBuilder) {
 		protocol = mBuilder.protocol;
 		from = mBuilder.from;
 		to = mBuilder.to;
 		msg = mBuilder.msg;
 		rInfo = mBuilder.rInfo;
-	}
+	} 	
 	
 }
