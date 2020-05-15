@@ -23,11 +23,9 @@ public class ThreadUtil {
 	private static ObjectOutputStream oos;
 	
 	static {
-		Log.i("ThreadUtil static 초기화자 실행");
 		Thread socketThread = new Thread(new socketImpl());
 		socketThread.setDaemon(true);
 		socketThread.start();
-		Log.i("ThreadUtil static 초기화자 완료");
 	}
 	
 	public static ObjectInputStream getOis() {
@@ -51,9 +49,8 @@ public class ThreadUtil {
 				socket = new Socket("localhost", 9500);
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
-				Log.i("ThreadUtil : 3개 생성 성공");
 			} catch (IOException e) {
-				Log.e("ThreadUtil : 소켓생성 오류" + e.getMessage());
+				Log.i("ThreadUtil : 서버가 닫혀있습니다.");
 				System.exit(0);
 			}
 		}

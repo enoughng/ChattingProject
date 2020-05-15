@@ -32,16 +32,20 @@ public class ServerDAO extends CommonDao{
 
 	}
 
-	public boolean checkLogin(Member member) throws SQLException {
+	public Member checkLogin(Member member) throws SQLException {
 		PreparedStatement pstmt = openConnection("CheckLogin"); 
 		pstmt.setString(1, member.getId());
 		pstmt.setString(2, member.getPassword());
-		boolean hasInfo = false;
 		ResultSet rs = pstmt.executeQuery();
+		Member loginMember = null;
 		while(rs.next()) {
-			hasInfo = true;
+			loginMember = new Member(null, null);
+			loginMember.setId(rs.getString("id"));
+			loginMember.setPassword(rs.getString("password"));
+			loginMember.setName(rs.getString("name"));
+			loginMember.setEmail(rs.getString("email"));
 		}
-		return hasInfo;
+		return loginMember;
 	}
 
 }

@@ -44,7 +44,7 @@ public class GoAction implements CommonAction {
 		try {
 			loader = new FXMLLoader(url);
 			Parent regiForm = (Parent)loader.load();
-			Scene scene = new Scene(regiForm);			
+			Scene scene = new Scene(regiForm);
 			stage.setScene(scene);
 			stage.show();
 		} catch (MalformedURLException e) {

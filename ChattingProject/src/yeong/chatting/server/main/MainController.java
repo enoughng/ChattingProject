@@ -1,6 +1,8 @@
 package yeong.chatting.server.main;
 
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,9 +23,18 @@ import yeong.chatting.util.Log;
  */
 public class MainController extends BaseController {
 	
+	private static MainController controller;
+	
+	
 	@FXML TextArea log;
 	@FXML Button toggle;
 	@FXML Button exit;
+	
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		super.initialize(location, resources);
+		controller = this;
+	}
 	
 	@FXML
 	private void toggle() {
@@ -34,9 +45,16 @@ public class MainController extends BaseController {
 	
 	@FXML
 	private void exit() {
-		Stage stage = (Stage)exit.getScene().getWindow();
-		stage.close();
+		System.exit(0);
 	}
 	
+	
+	public TextArea getLog() {
+		return log;
+	}
+	
+	public static MainController getMainController() {
+		return controller;
+	}
 	
 }

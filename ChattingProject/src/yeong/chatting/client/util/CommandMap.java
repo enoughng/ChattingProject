@@ -31,7 +31,6 @@ public class CommandMap {
 					Log.e(e.toString());
 				}
 			}
-			Log.i("설정파일이 성공적으로 로딩되었습니다.");	
 		} catch (IOException e) {
 			Log.e(e.toString());
 		}

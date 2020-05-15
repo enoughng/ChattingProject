@@ -2,24 +2,30 @@ package yeong.chatting.model;
 
 import java.io.Serializable;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Member implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8515944973869516702L;
 	private String id;
 	private String password;
-	private String name;
+	private String  name;
 	private String email;
 	
 	public Member(String id, String password) {
-		this.id = id;
-		this.password = password;
+		this.id = (id);
+		this.password =(password);
 	}
 	public Member(String id, String password, String name) {
-		this.id = id;
-		this.password = password;
-		this.name = name;
+		this(id,password);
+		this.name = (name);
 	}
 	public Member(String id, String password, String name, String email) {
 		this(id, password, name);
-		this.email = email;
+		this.email = (email);
 	}
 	
 	public String getId() {
@@ -46,11 +52,12 @@ public class Member implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
 	@Override
 	public String toString() {
-		return "Member [id=" + id + ", password=" + password + ", name=" + name + ", email=" + email + "]";
+		return "Member [id=" + id + ", name=" + name + "]";
 	}
+	
+	
 	
 	
 }

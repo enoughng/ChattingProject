@@ -21,7 +21,6 @@ public class FormAction implements CommonAction {
 
 	@Override
 	public void action(ActionInfo info) {
-		Log.i(getClass(),"RegistryAction ½ÇÇà");
 		addForm(info);
 	}
 

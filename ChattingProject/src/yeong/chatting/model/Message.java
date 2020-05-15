@@ -1,6 +1,8 @@
 package yeong.chatting.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import yeong.chatting.util.ProtocolType;
 
@@ -13,71 +15,69 @@ import yeong.chatting.util.ProtocolType;
  * @프로그램 설명 : ChatProject에서 사용하는 프로토콜이다. (Builder 패턴 사용)
  */
 public class Message implements Serializable{
-	//필수인자
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2172814615582842171L;
 	ProtocolType protocol;
-	private final Member from;
+	private Member from;
 	
 	//선택인자
 	private Member to;
 	private String msg;
 	private RoomInfo rInfo;
+	private ArrayList<Member> memberList;
+	
+	public Message(ProtocolType protocol, Member from) {
+		this.protocol = protocol;
+		this.from = from;
+	}
 	
 	public ProtocolType getProtocol() {
 		return protocol;
 	}
+	public void setProtocol(ProtocolType protocol) {
+		this.protocol = protocol;
+	}
 	public Member getFrom() {
 		return from;
+	}
+	public void setFrom(Member from) {
+		this.from = from;
 	}
 	public Member getTo() {
 		return to;
 	}
+	public void setTo(Member to) {
+		this.to = to;
+	}
 	public String getMsg() {
 		return msg;
+	}
+	public void setMsg(String msg) {
+		this.msg = msg;
 	}
 	public RoomInfo getrInfo() {
 		return rInfo;
 	}
-	public static class mBuilder {
-		
-		ProtocolType protocol;
-		private final Member from;
-		
-		private Member to;
-		private String msg;
-		private RoomInfo rInfo;
-		
-		public mBuilder(ProtocolType protocol, Member from) {
-			this.protocol = protocol;
-			this.from = from;
-		}
-		
-		public mBuilder to(Member to) {
-			this.to = to;
-			return this;
-		}
-		
-		public mBuilder msg(String msg) {
-			this.msg = msg;
-			return this;
-		}
-		
-		public mBuilder rInfo(RoomInfo rInfo) {
-			this.rInfo = rInfo;
-			return this;
-		}
-		
-		public Message build() {
-			return new Message(this);
-		}
+	public void setrInfo(RoomInfo rInfo) {
+		this.rInfo = rInfo;
+	}
+	public ArrayList<Member> getMemberList() {
+		return memberList;
+	}
+	public void setMemberList(ArrayList<Member> memberList) {
+		this.memberList = memberList;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	@Override
+	public String toString() {
+		return "Message [from=" + from + "]";
 	}
 	
 	
-	public Message(mBuilder mBuilder) {
-		protocol = mBuilder.protocol;
-		from = mBuilder.from;
-		to = mBuilder.to;
-		msg = mBuilder.msg;
-		rInfo = mBuilder.rInfo;
-	} 	
+	
 	
 }

@@ -17,6 +17,8 @@ public class ServerThread extends Thread{
 	private Runnable initThread;
 	private ServerSocket server;
 	private Socket socket;
+	public static int COUNT = 0; // ThreadCount;
+
 
 	private static ExecutorService threadPool;
 
@@ -26,18 +28,21 @@ public class ServerThread extends Thread{
 		init();
 	}
 
+	/**
+	 *  서버 쓰레드 시작 버튼 ( 포트열기 )
+	 */
 	public void start() {
 		try {
 			server = new ServerSocket(9500);
-			Log.i(getClass(),"서버 준비 완료");
-		} catch (IOException e1) {
+			
+			} catch (IOException e1) {
 			e1.printStackTrace();
-//			if(!server.isClosed()) {
-//				close();
-//			}
+			if(!server.isClosed()) {
+				close();
+			}
 		}
 		threadPool = Executors.newCachedThreadPool();
-		threadPool.execute(initThread);
+		threadPool.execute(initThread);  // initThread( accept 메소드 쓰레드로 실행 )
 	}
 
 	public void close() {
@@ -61,17 +66,19 @@ public class ServerThread extends Thread{
 		return threadPool;
 	}
 
-
+	/**
+	 * 클라이언트가 연결될때마다 serverThreads에 담아놓는다.
+	 */
 	private void init() {
 		initThread = new Runnable() {
 			@Override
-			public void run() {
+			public synchronized void run() {
 				while(!currentThread().isInterrupted()) {
 					try {
-						Log.i("객체 수신준비 완료");
 						socket = server.accept();
-						serverThreads.add(new InputThread(socket));
-						Log.i("객체 수신 완료");
+						InputThread inputThread = new InputThread(socket);
+						serverThreads.add(inputThread);
+						ServerThread.getThreadPool().execute(inputThread);
 					} 
 					catch (Exception e) {
 						if(!server.isClosed()) {

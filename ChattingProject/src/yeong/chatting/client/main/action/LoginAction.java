@@ -37,12 +37,10 @@ public class LoginAction implements CommonAction {
 		String inputId = idTf.getText(); 
 		String inputPw = pwPf.getText();
 		
-		Message m = new Message.mBuilder(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw))
-				.build();
+		Message m = new Message(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw));
 		
 		try {
 			oos.writeObject(m);
-			Log.i(getClass(),"로그인 요청이 성공적으로 이루어졌습니다.");
 		} catch (IOException e) {
 			Log.e(getClass(), e);
 		}

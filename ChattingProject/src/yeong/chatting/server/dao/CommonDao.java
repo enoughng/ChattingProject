@@ -34,7 +34,6 @@ public class CommonDao {
 			init();
 			initProperties();
 			pstmt = con.prepareStatement(SQLProperties.getProperty(sql));
-			Log.i(getClass(), "성공적으로 PreparedStatement를 생성하였습니다.");
 		} catch (ClassNotFoundException e) {
 			Log.e(getClass(), e);			
 		} catch (SQLException e) {
@@ -53,7 +52,6 @@ public class CommonDao {
 		Class.forName(DRIVER);
 		if(con == null) {
 			con = DriverManager.getConnection(URL,ID,PW);
-			Log.i(getClass(), "성공적으로 연결하였습니다.");
 		}
 	}
 
@@ -62,7 +60,6 @@ public class CommonDao {
 			SQLProperties = new Properties();
 			if(SQLProperties.isEmpty()) {
 				SQLProperties.load(new FileReader(new File(CommonPathAddress.SQLProperties)));
-				Log.i(getClass(), "성공적으로 SQL을 로드하였습니다.");
 			}
 		} catch (FileNotFoundException e) {
 			Log.e(getClass(), e);

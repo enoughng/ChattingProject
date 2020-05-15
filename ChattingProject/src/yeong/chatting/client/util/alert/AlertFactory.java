@@ -1,12 +1,13 @@
 package yeong.chatting.client.util.alert;
 
-import javafx.scene.control.Alert;
+import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
 
 public class AlertFactory {
+	
 	public static MyAlert createAlert(AlertType type, String msg) {
 		MyAlert alert = null;
-		switch(type) {
+			switch(type) {
 			case WARNING: 
 				alert = new WarningAlert(type, msg);
 				break;
@@ -16,7 +17,8 @@ public class AlertFactory {
 			case ERROR:
 				alert = new ErrorAlert(type, msg);
 				break;
-		}
+			default:
+			}
 		return alert;
 	}
 }

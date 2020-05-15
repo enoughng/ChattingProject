@@ -20,8 +20,6 @@ public class StartButtonAction implements CommonAction {
 		log = (TextArea)info.getCons()[0];
 		toggle = (Button)info.getCons()[1];
 		
-		Log.i(toggle.getText());
-		
 		if(toggle.getText().equals("서버 구동")) {
 			t.start();
 			setText("서버 중지");
@@ -46,5 +44,9 @@ public class StartButtonAction implements CommonAction {
 		Platform.runLater(()-> {
 			log.appendText(str);
 		});
+	}
+	
+	public TextArea getLog() {
+		return log;
 	}
 }

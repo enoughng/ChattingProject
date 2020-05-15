@@ -33,7 +33,7 @@ public class RegistryAction implements CommonAction {
 		
 		Member member = new Member(strID, strPW, strNick, strEmail);
 		
-		Message msg = new Message.mBuilder(ProtocolType.REQUEST_REGISTRY, member).build();
+		Message msg = new Message(ProtocolType.REQUEST_REGISTRY, member);
 		
 		
 		try {

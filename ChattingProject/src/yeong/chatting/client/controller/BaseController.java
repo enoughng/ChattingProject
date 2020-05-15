@@ -5,7 +5,9 @@ import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Control;
 import yeong.chatting.client.action.ActionInfo;
@@ -28,8 +30,10 @@ import yeong.chatting.util.Log;
  */
 public class BaseController  implements Initializable{
 	
-	private Map<String,CommonAction> commandMap;
+	protected Map<String,CommonAction> commandMap;
 	private CommonAction action;
+	
+	protected Control[] cons;
 		
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -42,13 +46,22 @@ public class BaseController  implements Initializable{
 		action.action(info);
 	}
 	
+		protected void initCommand() {
+		commandMap = CommandMap.getCommandMap();
+	}
+
 	public static void goAction(Control con, String url) {
 		if(url == null) return;
 		Map<String,CommonAction> map = CommandMap.getCommandMap();
 		map.get(url).action(new ActionInfo("Go",con,url));
+	}	
+	
+	public Control[] getControls() {
+		return cons; 
 	}
 	
-	private void initCommand() {
-		commandMap = CommandMap.getCommandMap();
+	protected void setControls(Control... cons) {
+		this.cons = cons;
 	}
 }
+
