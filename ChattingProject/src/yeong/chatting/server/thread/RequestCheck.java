@@ -12,6 +12,7 @@ import java.util.Vector;
 import javafx.application.Platform;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
+import yeong.chatting.model.RoomInfo;
 import yeong.chatting.server.dao.ServerDAO;
 import yeong.chatting.server.main.MainController;
 import yeong.chatting.util.Log;
@@ -32,19 +33,19 @@ public class RequestCheck {
 
 	private Message request;
 	private Message response;
-	
+
 	ProtocolType responseProtocol = null;
 
 	private boolean isBroadType = false;
-	
-	
+
+	private boolean isWaitingRoom = false;
+
 	public RequestCheck(Message msg) throws SQLException, IOException {
 		request = msg;
-	}
-	
-	public Message result() throws SQLException {
 		sDao = ServerDAO.getInstance();
+	}
 
+	public Message result() throws SQLException {
 		switch (request.getProtocol()) {
 		case REQUEST_LOGIN:
 			// 현재 사용자 수
@@ -64,11 +65,14 @@ public class RequestCheck {
 			isBroadType = false;
 			break;
 		default:
+		case REQUEST_CREATEROOM:
+			response = createRoom();
+			isBroadType = false;
 		}
-		
+
 		return response;
 	}
-	
+
 	public boolean sendType() {
 		return isBroadType;
 	}
@@ -90,7 +94,7 @@ public class RequestCheck {
 			}
 		});
 	}
-	
+
 	/**
 	 * switch case 문에 따른 메소드들
 	 * 
@@ -103,17 +107,19 @@ public class RequestCheck {
 		ProtocolType responseProtocol;
 		Member loginMember = sDao.checkLogin(request.getFrom()); // DB 조회한 멤버
 		if (loginMember != null) { // 조회한 멤버가 있다면
-			InputThread.memberCount++;
-			Log.i("memberCount : " + InputThread.memberCount);
 			appendLog(loginMember.getId() + "(" + loginMember.getName() + ")님이 로그인 하셨습니다.");
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_SUCCESS;
-			InputThread.memberList.add(loginMember);
+			ServerThread.memberList.add(loginMember);
+			InputThread.memberCount++;
+			ServerThread.isLogout=false;
+			loginMember.setWaitingRoom(true);
 			response = new Message(responseProtocol, loginMember);
+			appendLog("현재 인원 : " + ServerThread.memberList + "\nMember size : " + InputThread.memberCount);
 		} else {
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_FAIL;
 			response = new Message(responseProtocol, request.getFrom());
 		}
-		
+
 		return response;
 	}
 
@@ -121,39 +127,69 @@ public class RequestCheck {
 	 * 로그아웃
 	 */
 	private Message logout() throws SQLException {
-		
+
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_LOGOUT;
-		InputThread.memberList.remove(--InputThread.memberCount);
+		ServerThread.isLogout =true;
+		ServerThread.memberList.remove(--InputThread.memberCount);
 		appendLog(request.getFrom().getId() + "님이 로그아웃 하셨습니다.");
-		
+		appendLog("현재 인원 : " + ServerThread.memberList + "\n 인원수 : " +InputThread.memberCount);
+		ServerThread.isLogout=true;
+
 		Message response = new Message(responseProtocol, request.getFrom());
+		response.setMemberList(new Vector<Member>(ServerThread.memberList));
 		return  response;
 	}
-	
-	/**
+
+	/**	
 	 * 회원등록
 	 */
 	private Message registry() throws SQLException {
 		Message response;
-		
+
 		sDao.insertMember(request.getFrom()); // 데이터베이스 insert문 삽입
 		responseProtocol = ProtocolType.RESPONSE_REGISTRY_SUCCESS;
 		response = new Message(responseProtocol, request.getFrom());
 
 		return response;
 	}
-	
+
 	/**
-	 * 현재 들어와있는 멤버 수
+	 * 현재 들어와있는 멤버 수 및 만들어져있는 방정보
 	 * @return
 	 * @throws SQLException
 	 */
 	private Message getMembers() throws SQLException {
+		isWaitingRoom = true;
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_WAITINGROOM_MEMBER;
-		Message response = new Message(responseProtocol, request.getFrom());
-		response.setMemberList(InputThread.memberList);
-		Log.i(response.getMemberList());
+		Vector<RoomInfo> list = sDao.getRooms();
+		Message response = new Message(responseProtocol, request.getFrom(), new Vector<Member>(ServerThread.memberList));
+		response.getFrom().setWaitingRoom(isWaitingRoom);
+		response.setRoomList(list);
 		return response;
 	}
-	
+
+	/**
+	 * 방 만들기
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	private Message createRoom() throws SQLException { 
+		isWaitingRoom = false;
+		RoomInfo result = sDao.insertRoom(request.getrInfo());
+		if(result != null) {
+			response = new Message(ProtocolType.RESPONSE_CREATEROOM, request.getFrom());
+			response.setrInfo(result);
+		} else {
+			response = new Message(ProtocolType.RESPONSE_CREATEROOM_FAIL, request.getFrom());
+		}
+
+
+		return response;
+	}
+
+
+	/**
+	 * 현재 방 정보들
+	 */
 }

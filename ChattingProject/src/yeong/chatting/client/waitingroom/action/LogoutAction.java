@@ -5,6 +5,7 @@ import java.io.IOException;
 import javafx.stage.Window;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.action.GoAction;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.model.Message;
 import yeong.chatting.util.Log;
@@ -22,4 +23,6 @@ public class LogoutAction implements CommonAction{
 			e.printStackTrace();
 		}
 	}
+	
+	
 }

@@ -11,6 +11,7 @@ import yeong.chatting.client.util.ClientThread;
 import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.model.Member;
 import yeong.chatting.util.CommonPathAddress;
+import yeong.chatting.util.Log;
 
 public class ClientMain extends Application{
 	
@@ -36,13 +37,12 @@ public class ClientMain extends Application{
 	 * chatProject ����
 	 */
 	public static void main(String[] args) {
-		try {
+		try { 
 			Class.forName("yeong.chatting.client.util.ThreadUtil");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch(ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		launch(args);
+ 		launch(args);
 	}
 	
 	public static void setList(Vector<Member> list) {

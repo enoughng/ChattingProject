@@ -15,6 +15,14 @@ public class Member implements Serializable{
 	private String  name;
 	private String email;
 	
+	private boolean isWaitingRoom;
+	
+	public boolean isWaitingRoom() {
+		return isWaitingRoom;
+	}
+	public void setWaitingRoom(boolean isWaitingRoom) {
+		this.isWaitingRoom = isWaitingRoom;
+	}
 	public Member(String id, String password) {
 		this.id = (id);
 		this.password =(password);
@@ -52,6 +60,8 @@ public class Member implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	
 	@Override
 	public String toString() {
 		return "Member [id=" + id + ", name=" + name + "]";

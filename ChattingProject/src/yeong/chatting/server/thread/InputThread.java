@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import javax.sound.midi.ControllerEventListener;
@@ -36,19 +37,15 @@ public class InputThread implements Runnable{
 	private ObjectInputStream ois;
 
 	private boolean isBroadcast = false;
-
-	private boolean isStop;
-
 	private Message response;
 
-	public static ArrayList<Member> memberList = new ArrayList<>();
+
 	public static int ThreadCount; // Thread 죽일때 사용하는 ThreadCount
 	public static int memberCount; // 접속해있는 멤버수
 
 	public InputThread(Socket socket) {
 		this.socket = socket;
 		ThreadCount = ServerThread.COUNT++;
-		Log.i("Current Thread Count : " + ThreadCount);
 	}
 
 	@Override
@@ -56,22 +53,32 @@ public class InputThread implements Runnable{
 		try {
 			ois = new ObjectInputStream(socket.getInputStream());
 			oos = new ObjectOutputStream(socket.getOutputStream());
-			while(!isStop) {	
+			while(true) {	
+				
 				Message message = (Message)ois.readObject();
+				Log.i(getClass(),message.getProtocol().toString());
 				RequestCheck rc = new RequestCheck(message);
 				response = rc.result();
 				isBroadcast = rc.sendType();
+				
+				
+				
 				if(isBroadcast) {
 					broadcastSend(response);
+					
 				} else {
 					send(response);
 				}
 			}
+			
 		} catch(IOException e) {
+			
 			try {
 				ServerThread.serverThreads.remove(this);
 				ServerThread.COUNT--;
-				InputThread.memberCount--;
+				if(ServerThread.isLogout)
+					InputThread.memberCount--;
+				
 				Log.i(getClass(), "현재 List 목록 : " + ServerThread.serverThreads);
 				
 				socket.close();
@@ -92,8 +99,7 @@ public class InputThread implements Runnable{
 	 */
 	private void broadcastSend(Message msg) throws IOException {
 		for(InputThread t :ServerThread.serverThreads) {
-			t.oos.writeObject(msg);
-			System.out.println(msg.getMemberList());
+			t.send(msg);
 		}
 	}
 	/**
@@ -103,6 +109,12 @@ public class InputThread implements Runnable{
 	 */
 	private void send(Message msg) throws IOException {
 		oos.writeObject(msg);
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "\n현재 소켓주소  : " + socket.getRemoteSocketAddress() + "\n멤버 리스트 : " + ServerThread.memberList.toString() + "\n실행되고있는 ThreadCount" + ThreadCount+"\n";
 	}
 
 }

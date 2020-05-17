@@ -32,9 +32,7 @@ public class BaseController  implements Initializable{
 	
 	protected Map<String,CommonAction> commandMap;
 	private CommonAction action;
-	
-	protected Control[] cons;
-		
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initCommand();
@@ -55,13 +53,6 @@ public class BaseController  implements Initializable{
 		Map<String,CommonAction> map = CommandMap.getCommandMap();
 		map.get(url).action(new ActionInfo("Go",con,url));
 	}	
-	
-	public Control[] getControls() {
-		return cons; 
-	}
-	
-	protected void setControls(Control... cons) {
-		this.cons = cons;
-	}
+
 }
 

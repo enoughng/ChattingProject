@@ -9,7 +9,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.action.GoAction;
 import yeong.chatting.client.controller.BaseController;
+import yeong.chatting.client.waitingroom.WaitingRoomController;
 import yeong.chatting.util.CommonPathAddress;
 
 public class CreateRoomController extends BaseController {
@@ -23,7 +25,9 @@ public class CreateRoomController extends BaseController {
 	
 	@FXML
 	private void create() {
-		action(new ActionInfo("CreateRoom",createBtn,CommonPathAddress.ChattingRoomLayout));
+		ActionInfo createRoom = new ActionInfo("CreateRoom",createBtn,CommonPathAddress.ChattingRoomLayout);
+		createRoom.setCons(room_title, room_password, room_pwdchk);
+		action(createRoom);
 		action(new ActionInfo("Go", createBtn, CommonPathAddress.ChattingRoomLayout));
 	}
 	
@@ -31,6 +35,6 @@ public class CreateRoomController extends BaseController {
 	private void cancel() {
 		Stage stage = (Stage)cancelBtn.getScene().getWindow();
 		stage.close();
-		action(new ActionInfo("Form",cancelBtn,CommonPathAddress.WaitingRoomLayout));
+		GoAction.WaitingRoomGo((Stage)cancelBtn.getScene().getWindow(), getClass().getResource(CommonPathAddress.WaitingRoomLayout));
 	}
 }

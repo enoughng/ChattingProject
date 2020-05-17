@@ -2,6 +2,7 @@ package yeong.chatting.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import yeong.chatting.util.ProtocolType;
@@ -18,21 +19,33 @@ public class Message implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -2172814615582842171L;
+	private static final long serialVersionUID = -2172814615582842171L;	
 	ProtocolType protocol;
 	private Member from;
 	
-	//선택인자
 	private Member to;
 	private String msg;
 	private RoomInfo rInfo;
-	private ArrayList<Member> memberList;
+	private Vector<RoomInfo> roomList;
+
+	private Vector<Member> memberList;
 	
 	public Message(ProtocolType protocol, Member from) {
 		this.protocol = protocol;
 		this.from = from;
 	}
-	
+	public Message(ProtocolType protocol, Member from, Vector<Member> memberList) {
+		this(protocol, from);
+		this.memberList = memberList;
+	}
+
+
+	public Vector<RoomInfo> getRoomList() {
+		return roomList;
+	}
+	public void setRoomList(Vector<RoomInfo> roomList) {
+		this.roomList = roomList;
+	}
 	public ProtocolType getProtocol() {
 		return protocol;
 	}
@@ -63,10 +76,10 @@ public class Message implements Serializable{
 	public void setrInfo(RoomInfo rInfo) {
 		this.rInfo = rInfo;
 	}
-	public ArrayList<Member> getMemberList() {
+	public Vector<Member> getMemberList() {
 		return memberList;
 	}
-	public void setMemberList(ArrayList<Member> memberList) {
+	public void setMemberList(Vector<Member> memberList) {
 		this.memberList = memberList;
 	}
 	public static long getSerialversionuid() {

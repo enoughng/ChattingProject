@@ -3,5 +3,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="ChattingProject/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Oracle JDBC Driver"/>
+	<classpathentry kind="lib" path="D:/JAVA DRIVER/ojdbc8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

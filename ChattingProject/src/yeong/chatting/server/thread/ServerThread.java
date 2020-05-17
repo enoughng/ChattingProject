@@ -1,16 +1,16 @@
 package yeong.chatting.server.thread;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import yeong.chatting.util.Log;
+import yeong.chatting.model.Member;
+import yeong.chatting.model.RoomInfo;
 
 public class ServerThread extends Thread{
 
@@ -23,7 +23,12 @@ public class ServerThread extends Thread{
 	private static ExecutorService threadPool;
 
 	public static Vector<InputThread> serverThreads = new Vector<>();
-
+	public static Vector<Member> memberList = new Vector<>();
+	
+	public static Map<String, RoomInfo> list = new HashMap<>();
+	public static Vector<Member> roomMemberList = new Vector<>();
+	public static boolean isLogout = true;
+	
 	public ServerThread() {
 		init();
 	}
@@ -54,8 +59,10 @@ public class ServerThread extends Thread{
 			if(server != null && !server.isClosed()) {
 				server.close();
 			}
+			
 			if(threadPool != null && !threadPool.isShutdown())
 				threadPool.shutdownNow();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,7 +79,7 @@ public class ServerThread extends Thread{
 	private void init() {
 		initThread = new Runnable() {
 			@Override
-			public synchronized void run() {
+			public void run() {
 				while(!currentThread().isInterrupted()) {
 					try {
 						socket = server.accept();

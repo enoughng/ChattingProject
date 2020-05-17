@@ -19,8 +19,8 @@ public class CommonDao {
 
 	private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
 	private static final String URL = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
-	private static final String ID = "messenger";
-	private static final String PW = "messenger";
+	private static final String ID = "Chatting";
+	private static final String PW = "chatting";
 
 
 	private Connection con = null;

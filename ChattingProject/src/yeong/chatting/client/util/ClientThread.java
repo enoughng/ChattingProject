@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
@@ -18,6 +20,7 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import yeong.chatting.client.action.GoAction;
 import yeong.chatting.client.util.alert.AlertFactory;
+import yeong.chatting.client.waitingroom.WaitingRoomController;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.MemberBeans;
 import yeong.chatting.model.Message;
@@ -38,7 +41,7 @@ public class ClientThread implements Runnable {
 
 	private Stage primaryStage;
 
-	private Control[] cons;
+	private Control[] cons;	
 
 	public ClientThread(ObjectInputStream ois,ObjectOutputStream oos, Stage primaryStage) {
 		this.ois = ois;
@@ -52,12 +55,10 @@ public class ClientThread implements Runnable {
 	public void run() {
 		try {
 			while(true) {
-				try {
-					Message message = (Message)ois.readObject();
-					checkProtocol();
-				} catch (NullPointerException e) {
-				}
-			}
+				message = (Message)ois.readObject();
+				Log.i(getClass(),message.getProtocol().toString());
+				checkProtocol(message);
+			}	
 		} catch (ClassNotFoundException e) {
 			Log.e(getClass(), e);
 		} catch (IOException e) {
@@ -71,14 +72,10 @@ public class ClientThread implements Runnable {
 	 * 들어온 데이터에 대해 분류해주는 메소드
 	 */
 
-	private void checkProtocol() {
-
+	private void checkProtocol(Message message) {
 		switch(message.getProtocol()) {
 		case RESPONSE_LOGIN_SUCCESS:  
 			ClientInfo.currentMember = message.getFrom();
-			Platform.runLater(()->{
-				GoAction.go(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
-			});
 			try {
 				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, ClientInfo.currentMember));
 			} catch (IOException e) {
@@ -95,25 +92,37 @@ public class ClientThread implements Runnable {
 			AlertFactory.createAlert(AlertType.ERROR, "회원등록 실패"); 
 			break;
 		case RESPONSE_WAITINGROOM_MEMBER:
-			setListView();
+			try { setListView(message); } catch (IOException e) { Log.e(getClass(),e);}
 			break;
 		case RESPONSE_LOGOUT:
-			
-
+			try {
+				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, ClientInfo.currentMember));
+				ClientInfo.currentMember = null;	
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			break;
+		case RESPONSE_CREATEROOM:
+			GoAction.ChattingRoomGo(primaryStage, getClass().getResource(CommonPathAddress.ChattingRoomLayout));
 		default:
 		}
 
 
 	}
 
-	private void setListView() {
-		Log.i(message.getMemberList());
-		ObservableList<Member> list = FXCollections.observableArrayList(message.getMemberList());
+	private void setListView(Message message) throws IOException {
+		//		Log.i(message.getMemberList());
+		if(ClientInfo.currentMember==null) return;
+		ClientInfo.waitingRoomMemberList= FXCollections.observableArrayList(message.getMemberList());
+		ClientInfo.waitingRoomList = FXCollections.observableArrayList(message.getRoomList());
+		if(ClientInfo.currentMember.isWaitingRoom()) {
+			Platform.runLater(()->{
+				GoAction.WaitingRoomGo(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
+			});
+		}
 
-		//		TableView<RoomInfo> tableView = (TableView<RoomInfo>)cons[0];
-		//				ListView<Member> listView = (ListView<Member>)cons[1];
-		//				listView.getItems().setAll(list);
+
+		//				WaitingRoomController.getCon().getListView().getItems().setAll(list);
+
 	}
-
-
 }
