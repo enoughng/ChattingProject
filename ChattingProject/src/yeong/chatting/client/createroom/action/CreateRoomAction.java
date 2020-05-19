@@ -11,9 +11,11 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.action.GoAction;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.model.Message;
 import yeong.chatting.model.RoomInfo;
+import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
 import yeong.chatting.util.ProtocolType;
 
@@ -32,8 +34,6 @@ public class CreateRoomAction implements CommonAction {
 		
 		RoomInfo rInfo= new RoomInfo(strId,strPw,ClientInfo.currentMember.getName());
 		
-		
-		
 		request = new Message(ProtocolType.REQUEST_CREATEROOM, ClientInfo.currentMember);
 		request.setrInfo(rInfo);
 		
@@ -42,8 +42,5 @@ public class CreateRoomAction implements CommonAction {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		Stage primaryStage = info.getPrimaryStage();
-		primaryStage.close();
 	}
 }

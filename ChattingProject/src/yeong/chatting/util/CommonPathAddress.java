@@ -13,8 +13,8 @@ public class CommonPathAddress {
 	public static final String ServerMainLayout = "/yeong/chatting/server/view/MainLayout.fxml";
 	
 	// properties °æ·Î
-	public static final String clientActionProperties = "ChattingProject/src/yeong/chatting/client/properties/ClientAction.properties";
-	public static final String serverActionProperties = "ChattingProject/src/yeong/chatting/server/properties/serverAction.properties";
-	public static final String DBInfoProperties = "ChattingProject/src/yeong/chatting/server/properties/DBInfo.properties";
-	public static final String SQLProperties = "ChattingProject/src/yeong/chatting/server/properties/ServerSQL.properties";
+	public static final String clientActionProperties = "src/yeong/chatting/client/properties/ClientAction.properties";
+	public static final String serverActionProperties = "src/yeong/chatting/server/properties/serverAction.properties";
+	public static final String DBInfoProperties = "src/yeong/chatting/server/properties/DBInfo.properties";
+	public static final String SQLProperties = "src/yeong/chatting/server/properties/ServerSQL.properties";
 }

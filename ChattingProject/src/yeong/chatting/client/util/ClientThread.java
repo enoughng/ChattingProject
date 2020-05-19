@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 
 import javafx.application.Platform;
@@ -13,13 +14,18 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import yeong.chatting.client.action.GoAction;
+import yeong.chatting.client.chattingroom.ChattingRoomController;
+import yeong.chatting.client.registry.RegistryController;
 import yeong.chatting.client.util.alert.AlertFactory;
+import yeong.chatting.client.util.alert.MyAlert;
 import yeong.chatting.client.waitingroom.WaitingRoomController;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.MemberBeans;
@@ -41,7 +47,8 @@ public class ClientThread implements Runnable {
 
 	private Stage primaryStage;
 
-	private Control[] cons;	
+	private ChattingRoomController crCon;
+	private RegistryController rCon;
 
 	public ClientThread(ObjectInputStream ois,ObjectOutputStream oos, Stage primaryStage) {
 		this.ois = ois;
@@ -56,7 +63,6 @@ public class ClientThread implements Runnable {
 		try {
 			while(true) {
 				message = (Message)ois.readObject();
-				Log.i(getClass(),message.getProtocol().toString());
 				checkProtocol(message);
 			}	
 		} catch (ClassNotFoundException e) {
@@ -76,6 +82,7 @@ public class ClientThread implements Runnable {
 		switch(message.getProtocol()) {
 		case RESPONSE_LOGIN_SUCCESS:  
 			ClientInfo.currentMember = message.getFrom();
+			ClientInfo.currentMember.setPlace(Place.WaitingRoom);
 			try {
 				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, ClientInfo.currentMember));
 			} catch (IOException e) {
@@ -92,7 +99,7 @@ public class ClientThread implements Runnable {
 			AlertFactory.createAlert(AlertType.ERROR, "회원등록 실패"); 
 			break;
 		case RESPONSE_WAITINGROOM_MEMBER:
-			try { setListView(message); } catch (IOException e) { Log.e(getClass(),e);}
+			try { setWaitingRoom(message); } catch (IOException e) { Log.e(getClass(),e);}
 			break;
 		case RESPONSE_LOGOUT:
 			try {
@@ -103,26 +110,166 @@ public class ClientThread implements Runnable {
 			}
 			break;
 		case RESPONSE_CREATEROOM:
-			GoAction.ChattingRoomGo(primaryStage, getClass().getResource(CommonPathAddress.ChattingRoomLayout));
+			ClientInfo.currentRoom = message.getrInfo();
+			Platform.runLater( () -> {
+				GoAction.staticGo(primaryStage, getClass().getResource(CommonPathAddress.ChattingRoomLayout));
+				try { setChattingRoom(message); } catch (IOException e) { e.printStackTrace(); }
+			});
+			break;
+		case RESPONSE_ENTERROOM_SUCCESS:
+			ClientInfo.currentRoom = message.getrInfo();
+			try { setChattingRoom(message); } catch (IOException e) { Log.e(getClass(), e);}
+			break;
+		case RESPONSE_EXITROOM:
+			Log.i(getClass(), " MEMBER EXITROOM RESPONSE = " + ClientInfo.currentMember );
+			Log.i(getClass(), " ROOM EXITROOM RESPONSE = " + ClientInfo.currentRoom);
+			ClientInfo.currentRoom = null;
+			try { setWaitingRoom(message); } catch (IOException e) { Log.e(getClass(),e);}
+			break;
+		case RESPONSE_EXITROOM_HOST:
+
+			Log.i(ClientInfo.currentMember +" 클라 "+ClientInfo.currentRoom);
+			Log.i(ClientInfo.currentMember +" 응답 "+message.getrInfo());
+			if(ClientInfo.currentRoom.equals(message.getrInfo())) {
+				ClientInfo.currentMember.setPlace(Place.WaitingRoom);
+				ClientInfo.currentRoom = null;
+				try { setWaitingRoom(message); } catch (IOException e) { e.printStackTrace(); }
+			}
+			break;
+		case RESPONSE_UPDATEWAITINGROOM:
+			if(ClientInfo.currentMember == null)  return;
+			if(ClientInfo.currentMember.getPlace() == Place.WaitingRoom) {
+				Platform.runLater( () -> {
+					updateWaitingRoomList(message);				
+				});
+			}
+			break;
+		case RESPONSE_UPDATECHATTINGROOM:
+			if(ClientInfo.currentRoom == null) {
+				try { setWaitingRoom(message); } catch (IOException e) { e.printStackTrace(); }
+				return;
+			}
+			if(ClientInfo.currentRoom.getRoom_num() == message.getrInfo().getRoom_num())  {
+				Platform.runLater( () -> {
+					updateChattingRoomList(message);				
+				});
+			}
+			break;
+		case CLOSE:
+			Log.i("서버를 닫았습니다.");
+			System.exit(0);
+			break;
+
+		case RESPONSE_FORCEDEXIT:
+			try {
+				ClientInfo.currentMember.setPlace(Place.WaitingRoom);
+				GoThread goWaitingRoom = new GoThread(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
+				Platform.runLater(goWaitingRoom);
+				if(ClientInfo.currentMember.getPlace() == Place.WaitingRoom)
+					Platform.runLater( () -> {
+						updateWaitingRoomList(message);				
+					});
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case RESPONSE_SEND:
+			crCon = ChattingRoomController.getController();
+			crCon.setLog(message.getFrom(), message.getMsg());
+			break;
+		case RESPONSE_IDCHECK:
+			String checkedID= message.getMsg();
+			if(checkedID != null) {
+				MyAlert af = AlertFactory.createAlert(AlertType.ERROR, "해당 아이디 " + message.getMsg() +"는 사용하실 수 없습니다.");
+			} else {
+				rCon = RegistryController.getCon();
+				Platform.runLater( () -> {
+					Alert alert = new Alert(AlertType.CONFIRMATION, message.getFrom().getId() +"(은)는 사용이 가능합니다. 사용하시겠습니까?");
+					ButtonType bt1 = new ButtonType("확인");
+					ButtonType bt2 = new ButtonType("취소");
+
+					alert.getButtonTypes().setAll(bt1,bt2);
+					Optional<ButtonType> clickBT = alert.showAndWait();
+					if(clickBT.get() == bt1) {
+						rCon.getIDCheckButton().setDisable(true);
+						rCon.getIDField().setDisable(true);
+						rCon.setisCheckedId(true);
+						rCon.getEmailTextField().requestFocus(); 
+					}
+				});
+			}
 		default:
 		}
+	}
 
+	private void setWaitingRoom(Message message) throws IOException {
+
+		if(ClientInfo.currentMember == null) return;
+		GoThread goWaitingRoom = new GoThread(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
+		/**
+		 * 메시지 보낸사람이랑 받은사람이 같다면 대기실로 이동시켜라
+		 */
+		if(ClientInfo.currentMember.equals(message.getFrom())) {
+			Platform.runLater(goWaitingRoom);
+		}
+		/**
+		 * 대기실에 있다면 리스트를 업데이트 시켜라
+		 */
+		if(ClientInfo.currentMember.getPlace() == Place.WaitingRoom)
+			Platform.runLater( () -> {
+				updateWaitingRoomList(message);				
+			});
 
 	}
 
-	private void setListView(Message message) throws IOException {
-		//		Log.i(message.getMemberList());
-		if(ClientInfo.currentMember==null) return;
-		ClientInfo.waitingRoomMemberList= FXCollections.observableArrayList(message.getMemberList());
-		ClientInfo.waitingRoomList = FXCollections.observableArrayList(message.getRoomList());
-		if(ClientInfo.currentMember.isWaitingRoom()) {
-			Platform.runLater(()->{
-				GoAction.WaitingRoomGo(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
-			});
+
+	private void setChattingRoom(Message message) throws IOException {
+		GoThread goChattingRoom = new GoThread(primaryStage, getClass().getResource(CommonPathAddress.ChattingRoomLayout));
+
+		/**
+		 * 메시지 보낸사람이랑 받은사람이 같다면 현재방을 받은 방정보로 셋팅시키고 이동시켜라
+		 */
+		if(ClientInfo.currentMember.getId().equals(message.getFrom().getId())) {
+			ClientInfo.currentRoom = message.getrInfo();
+			Platform.runLater(goChattingRoom);
 		}
 
+		/**
+		 * 현재 전송된 메시지와 같은 방에 들어와 있다면 List를 업데이트 시켜라
+		 */
+		if(ClientInfo.currentRoom.getRoom_num() == message.getrInfo().getRoom_num()) 
+			Platform.runLater( () -> {
+				updateChattingRoomList(message);				
+			});
 
-		//				WaitingRoomController.getCon().getListView().getItems().setAll(list);
 
 	}
+
+	/**
+	 * updateWaitingRoom
+	 * @param msg
+	 */
+	private void updateWaitingRoomList(Message msg) {
+		WaitingRoomController con = WaitingRoomController.getController();
+
+		if(msg.getMemberList() != null) {
+			ObservableList<Member> memberList = FXCollections.observableArrayList(msg.getMemberList());
+			con.setListView(memberList);
+		}
+		if(msg.getRoomList() != null) {
+			ObservableList<RoomInfo> roomList = FXCollections.observableArrayList(msg.getRoomList());
+			con.setTableView(roomList);
+		}
+	}
+
+	/** 
+//	 * updateChattingRoom
+	 */
+	private void updateChattingRoomList(Message msg) {
+		ChattingRoomController con = ChattingRoomController.getController();
+		ObservableList<Member> roomMemberList = FXCollections.observableArrayList(msg.getRoomMemberList());
+		con.setListView(roomMemberList);
+	}
+
 }

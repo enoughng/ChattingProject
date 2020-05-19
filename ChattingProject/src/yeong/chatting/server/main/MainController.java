@@ -2,6 +2,7 @@ package yeong.chatting.server.main;
 
 import java.io.FileInputStream;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -11,6 +12,8 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.server.cotroller.BaseController;
+import yeong.chatting.server.dao.CommonDao;
+import yeong.chatting.server.dao.ServerDAO;
 import yeong.chatting.util.Log;
 
 /**
@@ -29,11 +32,20 @@ public class MainController extends BaseController {
 	@FXML TextArea log;
 	@FXML Button toggle;
 	@FXML Button exit;
+	// 커넥션을 닫기위한 DAO
+	private ServerDAO dao;
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		controller = this;
+		dao = ServerDAO.getInstance();
+		try {
+			dao.deleteRooms();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
@@ -45,6 +57,8 @@ public class MainController extends BaseController {
 	
 	@FXML
 	private void exit() {
+		if(toggle.getText().equals("서버 중지"))
+			dao.closeConnection();
 		System.exit(0);
 	}
 	

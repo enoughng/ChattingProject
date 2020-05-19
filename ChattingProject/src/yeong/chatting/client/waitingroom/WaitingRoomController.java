@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.controller.BaseController;
 import yeong.chatting.client.util.ClientInfo;
+import yeong.chatting.client.util.Place;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.MemberBeans;
 import yeong.chatting.model.RoomInfo;
@@ -44,33 +45,32 @@ public class WaitingRoomController extends BaseController {
 	private ObservableList<Member> members;
 	private ObservableList<RoomInfo> roomInfos;
 	
-	public static WaitingRoomController con;
+	private static WaitingRoomController con;
 		@Override
 		public void initialize(URL location, ResourceBundle resources) {
 			super.initialize(location, resources);
+			con = this;
 			initListView();
 			initTableView();
-		
 		}
 	
 	@FXML
 	private void create() {
-		ClientInfo.currentMember.setWaitingRoom(false);
-		action(new ActionInfo("Form",createBtn,CommonPathAddress.CreateRoomLayout));
-		Stage stage = (Stage)createBtn.getScene().getWindow();
-		stage.close();
+		ClientInfo.currentMember.setPlace(Place.CreateRoom);
+		action(new ActionInfo("Go",createBtn,CommonPathAddress.CreateRoomLayout));
 	}
 	
 	@FXML
 	private void enter() {
-		ClientInfo.currentMember.setWaitingRoom(false);
-		members.add(new Member("id","password"));
-		action(new ActionInfo("EnterRoom",enterBtn,CommonPathAddress.ChattingRoomLayout));
+		ClientInfo.currentMember.setPlace(Place.ChattingRoom);
+		ActionInfo info = new ActionInfo("EnterRoom", enterBtn, CommonPathAddress.ChattingRoomLayout);
+		info.setUserDatas(roomList.getSelectionModel().getSelectedItem());
+		action(info);
 	}
 	
 	@FXML
 	private void logout() {
-		ClientInfo.currentMember.setWaitingRoom(false);
+		ClientInfo.currentMember.setPlace(Place.LoginLayout);
 		action(new ActionInfo("Logout",logoutBtn,CommonPathAddress.LoginLayout));
 		action(new ActionInfo("Go",logoutBtn,CommonPathAddress.LoginLayout));
 
@@ -93,21 +93,30 @@ public class WaitingRoomController extends BaseController {
 	
 	/**
 	 * 방 정보 갱신
-	 * @param list
 	 */
 	public void setTableView(ObservableList<RoomInfo> list) {
-		
 		roomInfos.clear();
 		roomInfos.addAll(list);
-		
-		
 	}
 	
+	public static WaitingRoomController getController() {
+		return con;
+	}
+	
+	
+	/**
+	 * ListView와 ObservableList<Member> 연결
+	 */
 	private void initListView() {
 		members = FXCollections.observableArrayList();
 		memberList.setItems(members);
 	}
 	
+	
+	
+	/**
+	 * TableView와 ObservableList<RoomInfo> 연결
+	 */
 	private void initTableView() {
 		roomInfos = FXCollections.observableArrayList();
 		roomList.setItems(roomInfos);
@@ -122,10 +131,12 @@ public class WaitingRoomController extends BaseController {
 		rMembers.setCellValueFactory(new PropertyValueFactory<RoomInfo, Integer>("room_members"));
 		rHost.setCellValueFactory(new PropertyValueFactory<RoomInfo, String>("room_host"));
 		
-		rIndex.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.1));
-		rTitle.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.6));
-		rMembers.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.1));
+		rIndex.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.25));
+		rTitle.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.3));
+		rMembers.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.25));
 		rHost.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.2));
+		
+		roomList.getColumns().setAll(rIndex, rTitle, rMembers, rHost);
 	}
 	
 }

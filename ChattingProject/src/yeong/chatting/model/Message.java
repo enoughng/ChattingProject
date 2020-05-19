@@ -3,6 +3,7 @@ package yeong.chatting.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import yeong.chatting.util.ProtocolType;
@@ -26,20 +27,41 @@ public class Message implements Serializable{
 	private Member to;
 	private String msg;
 	private RoomInfo rInfo;
-	private Vector<RoomInfo> roomList;
-
-	private Vector<Member> memberList;
+	
+	private Vector<Member> roomMemberList; // 특정 방 접속멤버
+	private Vector<RoomInfo> roomList; // 대기실 방 정보
+	private Vector<Member> memberList; // 대기실 멤버
+	
+	
+	public Message(ProtocolType protocol, String msg) {
+		this.protocol = protocol;
+		this.msg = msg;
+	}
 	
 	public Message(ProtocolType protocol, Member from) {
 		this.protocol = protocol;
 		this.from = from;
 	}
+	
+	public Message(ProtocolType protocol, Member from, RoomInfo rInfo) {
+		this(protocol, from);
+		this.rInfo = rInfo;
+	}
+
 	public Message(ProtocolType protocol, Member from, Vector<Member> memberList) {
 		this(protocol, from);
 		this.memberList = memberList;
 	}
+	
+	
+	
 
-
+	public Vector<Member> getRoomMemberList() {
+		return roomMemberList;
+	}
+	public void setRoomMemberList(Vector<Member> roomMemberList) {
+		this.roomMemberList = roomMemberList;
+	}
 	public Vector<RoomInfo> getRoomList() {
 		return roomList;
 	}
@@ -85,10 +107,15 @@ public class Message implements Serializable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 	@Override
 	public String toString() {
-		return "Message [from=" + from + "]";
+		return "Message [protocol=" + protocol + ", from=" + from + ", to=" + to + ", msg=" + msg + ", rInfo=" + rInfo
+				+ ", roomMemberList=" + roomMemberList + ", roomList=" + roomList + ", memberList=" + memberList + "]";
 	}
+
+	
+	
 	
 	
 	

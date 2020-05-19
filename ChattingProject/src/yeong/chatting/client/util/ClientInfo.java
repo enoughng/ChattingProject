@@ -26,6 +26,8 @@ public class ClientInfo {
 	public static RoomInfo currentRoom;
 	public static ObservableList<Member> chattingRoomMemberList;
 	
+	
+	
 //	public static <T extends BaseController> T getController(URL url) {
 //		
 //		FXMLLoader loader = new FXMLLoader(url);

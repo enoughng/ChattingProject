@@ -1,8 +1,7 @@
-package yeong.chatting.client.waitingroom.action;
+package yeong.chatting.client.chattingroom.action;
 
 import java.io.IOException;
 
-import javafx.stage.Window;
 import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.client.action.CommonAction;
 import yeong.chatting.client.util.ClientInfo;
@@ -12,19 +11,17 @@ import yeong.chatting.model.RoomInfo;
 import yeong.chatting.util.Log;
 import yeong.chatting.util.ProtocolType;
 
-public class EnterRoomAction implements CommonAction {
+public class RoomExitAction implements CommonAction{
 
 	@Override
 	public void action(ActionInfo info) {
-
-		ProtocolType requestProtocol = ProtocolType.REQUEST_ENTERROOM;
+		
+		ProtocolType requestProtocol = ProtocolType.REQUEST_EXITROOM;
 		Member currentMember = ClientInfo.currentMember;
+		RoomInfo rInfo = ClientInfo.currentRoom;
+		Log.i(rInfo.toString());
+		Message request = new Message(requestProtocol,currentMember, rInfo);
 		
-		RoomInfo selectedRoom = (RoomInfo)info.getUserDatas()[0];
-		
-		Message request = new Message(requestProtocol, currentMember);
-		request.setrInfo(selectedRoom);
-
 		try {
 			oos.writeObject(request);
 		} catch (IOException e) {

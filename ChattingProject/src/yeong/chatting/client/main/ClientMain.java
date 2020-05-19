@@ -24,6 +24,7 @@ public class ClientMain extends Application{
 		Scene scene = new Scene(root);
 		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
+		primaryStage.setTitle("로그인 화면");
 		primaryStage.show();
 		
 		Thread thread = new Thread(new ClientThread(ThreadUtil.getOis(),ThreadUtil.getOos(),primaryStage));

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import yeong.chatting.client.util.Place;
 
 public class Member implements Serializable{
 	/**
@@ -15,13 +16,13 @@ public class Member implements Serializable{
 	private String  name;
 	private String email;
 	
-	private boolean isWaitingRoom;
+	private Place place;
 	
-	public boolean isWaitingRoom() {
-		return isWaitingRoom;
+	public Place isWaitingRoom() {
+		return place;
 	}
-	public void setWaitingRoom(boolean isWaitingRoom) {
-		this.isWaitingRoom = isWaitingRoom;
+	public void setPlace(Place place) {
+		this.place = place;
 	}
 	public Member(String id, String password) {
 		this.id = (id);
@@ -62,12 +63,24 @@ public class Member implements Serializable{
 	}
 	
 	
+	public Place getPlace() {
+		return place;
+	}
 	@Override
 	public String toString() {
-		return "Member [id=" + id + ", name=" + name + "]";
+		return name + "(" + id +")";
 	}
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof Member) {
+			Member m = (Member) obj;
+			if(id.equals(m.id)) {
+				return true;				
+			}
+		}
+		return false;
+	}
 	
 	
 }

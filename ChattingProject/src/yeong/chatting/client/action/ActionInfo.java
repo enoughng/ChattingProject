@@ -28,6 +28,9 @@ public class ActionInfo {
 	private String destination;
 	private CommonAction ca;
 	
+	/* 속성들 */
+	private Object[] userDatas;
+	
 	private Control[] cons;
 	/**
 	 * @param command : properties에 저장된 Aciton이름
@@ -87,11 +90,19 @@ public class ActionInfo {
 	}
 	
 	
-	public void goAction(String destination) {
-		this.command = "Go";
-		this.destination = destination;
-		initAction(command);
-		ca.action(this);
+//	public void goAction(String destination) {
+//		this.command = "Go";
+//		this.destination = destination;
+//		initAction(command);
+//		ca.action(this);
+//	}
+	
+	public void setUserDatas(Object... objs) {
+		userDatas = objs;
+	}
+
+	public Object[] getUserDatas() {
+		return userDatas;
 	}
 	
 	public void closeAction() {
@@ -102,6 +113,9 @@ public class ActionInfo {
 	private void initAction(String command) {
 		ca = (CommonAction)commandMap.get(command);
 	}
+	
+	
+	
 	
 	
 }

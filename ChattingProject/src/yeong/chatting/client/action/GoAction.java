@@ -15,6 +15,7 @@ import yeong.chatting.client.chattingroom.ChattingRoomController;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.client.waitingroom.WaitingRoomController;
 import yeong.chatting.model.Member;
+import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
 
 public class GoAction implements CommonAction {
@@ -31,6 +32,9 @@ public class GoAction implements CommonAction {
 			Parent regiForm = (Parent)loader.load();
 			Scene scene = new Scene(regiForm);
 			Stage primaryStage = (Stage)info.getPrimaryStage();
+			if(info.getURL().toString().indexOf(CommonPathAddress.LoginLayout) != -1) {
+				primaryStage.setTitle("로그인 화면");				
+			}
 
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -41,58 +45,25 @@ public class GoAction implements CommonAction {
 		}
 	}
 	
-	public static void LoginGo(Stage stage, URL url) {
+	public static void staticGo(Stage stage, URL url) {
 		FXMLLoader loader = new FXMLLoader(url);
-		Parent form;
+		Parent root;
 		try {
-			form = (Parent)loader.load();
-			Scene scene = new Scene(form);
-			Stage primaryStage = stage;
-			primaryStage.setScene(scene);
-			primaryStage.show();
+			root = (Parent)loader.load();
+			Scene scene = new Scene(root);
+			if(url.toString().indexOf(CommonPathAddress.WaitingRoomLayout) != -1) {
+				stage.setTitle("대기실 : " + ClientInfo.currentMember.getName());
+			} else if(url.toString().indexOf(CommonPathAddress.ChattingRoomLayout) != -1) {
+				stage.setTitle(ClientInfo.currentRoom.getRoom_num()+ " 번 채팅방");
+			}
+			
+			
+			stage.setScene(scene);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			
 		}
 	}
-
-	public static void WaitingRoomGo(Stage stage, URL url) {
-		FXMLLoader loader;
-		try {
-			loader = new FXMLLoader(url);
-			Parent regiForm = (Parent)loader.load();
-			WaitingRoomController con = loader.getController();
-			con.setListView(ClientInfo.waitingRoomMemberList);
-			con.setTableView(ClientInfo.waitingRoomList);
-			Scene scene = new Scene(regiForm);
-			stage.setScene(scene);
-			stage.show();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	public static void ChattingRoomGo(Stage stage, URL url) {
-		FXMLLoader loader;
-		try {
-			loader = new FXMLLoader(url);
-			Parent regiForm = (Parent)loader.load();
-			ChattingRoomController con = loader.getController();
-			//			con.setListView(ClientInfo.chattingRoomMemberList);
-			Scene scene = new Scene(regiForm);
-			stage.setScene(scene);
-			stage.show();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 
 }

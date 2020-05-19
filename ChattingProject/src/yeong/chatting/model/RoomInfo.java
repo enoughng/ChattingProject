@@ -2,6 +2,8 @@ package yeong.chatting.model;
 
 import java.io.Serializable;
 
+import yeong.chatting.util.Log;
+
 public class RoomInfo implements Serializable {
 	/**
 	 * 
@@ -15,7 +17,16 @@ public class RoomInfo implements Serializable {
 	private int room_members;
 	private boolean isEnter;
 	
-	
+	public RoomInfo(RoomInfo info) {
+		this.room_num = info.room_num;
+		this.room_title = info.room_title;
+		this.room_pwd = info.room_pwd;
+		this.room_host = info.room_host;
+		this.room_members = info.room_members;
+	}
+
+
+
 	public int getRoom_members() {
 		return room_members;
 	}
@@ -38,6 +49,11 @@ public class RoomInfo implements Serializable {
 		this.room_title = room_title;
 		this.room_pwd = room_pwd;
 		this.room_host = room_host;
+	}
+	
+	public RoomInfo(int room_num, String room_title, String room_pwd, String room_host, int room_members) {
+		this(room_num, room_title, room_pwd, room_host);
+		this.room_members = room_members;
 	}
 	public int getRoom_num() {
 		return room_num;
@@ -63,5 +79,23 @@ public class RoomInfo implements Serializable {
 	public void setRoom_host(String room_host) {
 		this.room_host = room_host;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof RoomInfo) {
+			RoomInfo tmp =(RoomInfo)obj;
+			if(room_host.equals(tmp.room_host) && room_num == tmp.room_num) {
+				return true;
+			}
+		}
+		return false;
+	}
+	@Override
+	public String toString() {
+		return "RoomInfo [room_num=" + room_num + ", room_title=" + room_title + ", room_pwd=" + room_pwd
+				+ ", room_host=" + room_host + ", room_members=" + room_members + ", isEnter=" + isEnter + "]";
+	}
+	
+	
 	
 }

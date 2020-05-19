@@ -11,7 +11,7 @@ public class ConfirmAlert extends MyAlert {
 			Alert alert = new Alert(type,msg);
 			alert.getButtonTypes().setAll(new ButtonType("확인"));
 			alert.setHeaderText("확인");
-			alert.showAndWait();
+			alert.show();
 		});
 	}
 }

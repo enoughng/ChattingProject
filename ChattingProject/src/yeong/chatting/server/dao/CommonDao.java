@@ -19,8 +19,8 @@ public class CommonDao {
 
 	private static final String DRIVER = "oracle.jdbc.driver.OracleDriver";
 	private static final String URL = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
-	private static final String ID = "Chatting";
-	private static final String PW = "chatting";
+	private static final String ID = "messenger";
+	private static final String PW = "messenger";
 
 
 	private Connection con = null;
@@ -43,14 +43,14 @@ public class CommonDao {
 	}
 
 	public void closeConnection() {
-		try { if(!pstmt.isClosed()) { pstmt.close(); }  } catch(SQLException e) {};
-		try { if(!con.isClosed()) { con.close(); }  } catch(SQLException e) {};
+		try { if(pstmt != null || !pstmt.isClosed()) { pstmt.close(); }  } catch(SQLException e) {};
+		try { if(con != null  || !con.isClosed()) { con.close(); }  } catch(SQLException e) {};
 	}
 
 
 	private void init() throws ClassNotFoundException, SQLException{
 		Class.forName(DRIVER);
-		if(con == null) {
+		if(con == null || con.isClosed()) {
 			con = DriverManager.getConnection(URL,ID,PW);
 		}
 	}

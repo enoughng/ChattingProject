@@ -1,4 +1,5 @@
 package yeong.chatting.client.action;import java.io.IOException;
+import java.net.URL;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,6 +36,7 @@ public class FormAction implements CommonAction {
 			if(action.getAbsoluteDestination().indexOf(getClass().getResource(CommonPathAddress.RegistryLayout).toString())!=-1) {
 				stage.initOwner(action.getPrimaryStage());
 				stage.initModality(Modality.APPLICATION_MODAL);
+				stage.setTitle("회원가입 창");
 			}
 			stage.setResizable(false);
 			stage.show();
@@ -44,4 +46,13 @@ public class FormAction implements CommonAction {
 			Log.e(getClass(), e);
 		}
 	}
-}
+	
+	public static void addForm(URL url) throws IOException {
+		FXMLLoader loader = new FXMLLoader(url);
+		Parent root = (Parent)loader.load();
+		Scene scene = new Scene(root);
+		Stage stage = new Stage();
+		stage.setScene(scene);
+		stage.show();
+	}
+ }

@@ -35,6 +35,10 @@ public class LoginAction implements CommonAction {
 		TextInputControl idTf = (TextField)info.getCons()[0];
 		TextInputControl pwPf = (PasswordField)info.getCons()[1];
 		String inputId = idTf.getText(); 
+		if(inputId.trim().length() == 0) {
+			return;
+		}
+		
 		String inputPw = pwPf.getText();
 		
 		Message m = new Message(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw));
