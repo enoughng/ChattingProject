@@ -1,20 +1,20 @@
 package yeong.chatting.server.main;
 
-import java.io.FileInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
-import yeong.chatting.client.action.ActionInfo;
+import javafx.stage.FileChooser;
+import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.server.cotroller.BaseController;
-import yeong.chatting.server.dao.CommonDao;
 import yeong.chatting.server.dao.ServerDAO;
-import yeong.chatting.util.Log;
 
 /**
  * @FileName  : MainController.java
@@ -28,9 +28,9 @@ public class MainController extends BaseController {
 	
 	private static MainController controller;
 	
-	
 	@FXML TextArea log;
 	@FXML Button toggle;
+	@FXML Button save;
 	@FXML Button exit;
 	// Ä¿³Ø¼ÇÀ» ´Ý±âÀ§ÇÑ DAO
 	private ServerDAO dao;
@@ -62,6 +62,29 @@ public class MainController extends BaseController {
 		System.exit(0);
 	}
 	
+	@FXML
+	private void saveLog() {
+		FileChooser chooser = new FileChooser();
+		chooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Text files", ".txt"));
+		File file = chooser.showSaveDialog(save.getScene().getWindow());
+		
+		
+		if( file != null) {
+			saveFile(file);
+		}
+		
+	}
+	
+	private void saveFile(File file) {
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(new FileWriter(file),true);
+			writer.println(log.getText().replace("\n", "\r\n"));
+			writer.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public TextArea getLog() {
 		return log;

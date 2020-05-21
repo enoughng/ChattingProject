@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 
 import javafx.fxml.Initializable;
-import yeong.chatting.client.action.ActionInfo;
+import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.server.action.CommonAction;
 import yeong.chatting.server.thread.ServerThread;
 import yeong.chatting.util.CommandMap;

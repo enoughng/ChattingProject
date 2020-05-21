@@ -17,9 +17,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import yeong.chatting.client.action.ActionInfo;
-import yeong.chatting.client.action.CommonAction;
-import yeong.chatting.client.controller.BaseController;
+import yeong.chatting.client.base.action.ActionInfo;
+import yeong.chatting.client.base.action.CommonAction;
+import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.util.CommandMap;
 import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.util.CommonPathAddress;
@@ -46,6 +46,7 @@ public class MainController extends BaseController {
 	Button exitBtn;
 	@FXML
 	Button registryBtn;
+	
 	
 	@FXML
 	public void login() {

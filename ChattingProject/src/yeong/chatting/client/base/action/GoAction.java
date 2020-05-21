@@ -1,4 +1,4 @@
-package yeong.chatting.client.action;
+package yeong.chatting.client.base.action;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,7 +11,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
+import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.chattingroom.ChattingRoomController;
+import yeong.chatting.client.createroom.CreateRoomController;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.client.waitingroom.WaitingRoomController;
 import yeong.chatting.model.Member;
@@ -31,11 +36,18 @@ public class GoAction implements CommonAction {
 			FXMLLoader loader = new FXMLLoader(info.getURL());
 			Parent regiForm = (Parent)loader.load();
 			Scene scene = new Scene(regiForm);
+			
+			JMetro jMetro = new JMetro(Style.LIGHT);
+			jMetro.setScene(scene);
+			
 			Stage primaryStage = (Stage)info.getPrimaryStage();
 			if(info.getURL().toString().indexOf(CommonPathAddress.LoginLayout) != -1) {
 				primaryStage.setTitle("로그인 화면");				
+			} else if(info.getURL().toString().indexOf("CreateRoomLayout.fxml") != -1) {
+//				CreateRoomController con = loader.getController();
+//				con.setStage(info.getPrimaryStage());
+				info.getPrimaryStage().setTitle("채팅방 만들기");
 			}
-
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
@@ -48,13 +60,23 @@ public class GoAction implements CommonAction {
 	public static void staticGo(Stage stage, URL url) {
 		FXMLLoader loader = new FXMLLoader(url);
 		Parent root;
+		
 		try {
+			
 			root = (Parent)loader.load();
 			Scene scene = new Scene(root);
-			if(url.toString().indexOf(CommonPathAddress.WaitingRoomLayout) != -1) {
+			if(url.toString().indexOf("WaitingRoomLayout.fxml") != -1) {
+				try {
 				stage.setTitle("대기실 : " + ClientInfo.currentMember.getName());
+				} catch(NullPointerException e) {
+					
+				}
+			} else if(url.toString().indexOf("CreateRoomLayout.fxml") != -1) {
+//				CreateRoomController con = loader.getController();
+//				con.setStage(stage);
+				stage.setTitle("채팅방 만들기");
 			} else if(url.toString().indexOf(CommonPathAddress.ChattingRoomLayout) != -1) {
-				stage.setTitle(ClientInfo.currentRoom.getRoom_num()+ " 번 채팅방");
+				stage.setTitle(ClientInfo.currentRoom.getRoom_num()+ " 번 채팅방" + " : " + ClientInfo.currentMember.getName() + "님");
 			}
 			
 			

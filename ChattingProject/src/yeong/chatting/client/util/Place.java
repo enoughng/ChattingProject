@@ -4,5 +4,6 @@ public enum Place {
 	LoginLayout,
 	CreateRoom,
 	WaitingRoom,
-	ChattingRoom
+	ChattingRoom,
+	InviteForm
 }

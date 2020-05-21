@@ -3,7 +3,7 @@ package yeong.chatting.client.util;
 import java.net.URL;
 
 import javafx.stage.Stage;
-import yeong.chatting.client.action.GoAction;
+import yeong.chatting.client.base.action.GoAction;
 
 public class GoThread implements Runnable{
 	

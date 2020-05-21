@@ -14,15 +14,20 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import yeong.chatting.client.action.GoAction;
+import yeong.chatting.client.base.action.GoAction;
 import yeong.chatting.client.chattingroom.ChattingRoomController;
+import yeong.chatting.client.invite.InviteController;
 import yeong.chatting.client.registry.RegistryController;
 import yeong.chatting.client.util.alert.AlertFactory;
 import yeong.chatting.client.util.alert.MyAlert;
@@ -65,7 +70,14 @@ public class ClientThread implements Runnable {
 				message = (Message)ois.readObject();
 				checkProtocol(message);
 			}	
-		} catch (ClassNotFoundException e) {
+		} catch(NullPointerException e) {
+			e.printStackTrace();
+			Platform.runLater( () -> {
+				Alert alert = new Alert(AlertType.ERROR, "서버가 닫혀있어 종료합니다."); 
+				alert.showAndWait();
+				System.exit(0);				
+			});
+		}catch (ClassNotFoundException e) {
 			Log.e(getClass(), e);
 		} catch (IOException e) {
 			Log.e("서버와의 연결이 끊겼습니다.");
@@ -90,7 +102,11 @@ public class ClientThread implements Runnable {
 			} 
 			break;
 		case RESPONSE_LOGIN_FAIL:  
-			AlertFactory.createAlert(AlertType.ERROR, "아이디 또는 패스워드를 확인해주세요"); 
+			if(message.getFrom() == null) {
+				AlertFactory.createAlert(AlertType.ERROR, "아이디 또는 패스워드를 확인해주세요"); 				
+			} else {
+				AlertFactory.createAlert(AlertType.ERROR, "이미 로그인된 계정입니다.");
+			}
 			break;
 		case RESPONSE_REGISTRY_SUCCESS: 
 			AlertFactory.createAlert(AlertType.CONFIRMATION, "회원등록 성공"); 
@@ -121,15 +137,10 @@ public class ClientThread implements Runnable {
 			try { setChattingRoom(message); } catch (IOException e) { Log.e(getClass(), e);}
 			break;
 		case RESPONSE_EXITROOM:
-			Log.i(getClass(), " MEMBER EXITROOM RESPONSE = " + ClientInfo.currentMember );
-			Log.i(getClass(), " ROOM EXITROOM RESPONSE = " + ClientInfo.currentRoom);
 			ClientInfo.currentRoom = null;
 			try { setWaitingRoom(message); } catch (IOException e) { Log.e(getClass(),e);}
 			break;
 		case RESPONSE_EXITROOM_HOST:
-
-			Log.i(ClientInfo.currentMember +" 클라 "+ClientInfo.currentRoom);
-			Log.i(ClientInfo.currentMember +" 응답 "+message.getrInfo());
 			if(ClientInfo.currentRoom.equals(message.getrInfo())) {
 				ClientInfo.currentMember.setPlace(Place.WaitingRoom);
 				ClientInfo.currentRoom = null;
@@ -141,6 +152,11 @@ public class ClientThread implements Runnable {
 			if(ClientInfo.currentMember.getPlace() == Place.WaitingRoom) {
 				Platform.runLater( () -> {
 					updateWaitingRoomList(message);				
+				});
+			}
+			if(ClientInfo.currentMember.getPlace() == Place.InviteForm) {
+				Platform.runLater( () -> {
+					updateInviteForm(message);
 				});
 			}
 			break;
@@ -162,6 +178,15 @@ public class ClientThread implements Runnable {
 
 		case RESPONSE_FORCEDEXIT:
 			try {
+				Platform.runLater( ()-> {
+					Alert alert = new Alert(AlertType.CONFIRMATION, "방장이 방을 폭파시켰습니다!!!");
+					alert.setTitle("방장이 나가버렸음");
+					ButtonType t1 = new ButtonType("확인");
+					alert.getButtonTypes().setAll(t1);
+					alert.setHeaderText("강제퇴장");
+					alert.show();
+				});
+				ClientInfo.currentRoom=null;
 				ClientInfo.currentMember.setPlace(Place.WaitingRoom);
 				GoThread goWaitingRoom = new GoThread(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
 				Platform.runLater(goWaitingRoom);
@@ -199,6 +224,64 @@ public class ClientThread implements Runnable {
 					}
 				});
 			}
+			break;
+		case RESPONSE_ENTERROOM_PASSWORD:
+			Platform.runLater( () -> {
+				TextInputDialog tid = new TextInputDialog();
+
+				tid.setTitle("비밀번호 입력");
+				tid.setHeaderText("비밀번호 입력 : ");
+				tid.setContentText("비밀번호를 입력하세요");
+				tid.initOwner(primaryStage);
+				tid.initModality(Modality.APPLICATION_MODAL);
+				Optional<String> result = tid.showAndWait();
+
+				result.ifPresent(resultString ->{
+					if(resultString.equals(message.getrInfo().getRoom_pwd())) {
+
+						message.setProtocol(ProtocolType.REQUEST_ENTERROOM);
+						String userPw = resultString;
+						RoomInfo newInfo = message.getrInfo();
+						newInfo.setRoom_pwd(userPw);
+						message.setrInfo(newInfo);
+						try { oos.writeObject(message); } catch (IOException e) { e.printStackTrace(); }
+						return;
+					} else {
+						Alert alert = new Alert(AlertType.ERROR, "잘못된 비밀번호 입니다.");
+						alert.setHeaderText("비밀번호 오류");
+						alert.setTitle("비밀번호 오류");
+						alert.showAndWait();
+						return;
+					}
+				});
+			});
+			break;
+		case RESPONSE_WHISPER:
+			crCon = ChattingRoomController.getController();
+			crCon.setWhisper(message.getFrom(), message.getTo(), message.getMsg());
+			break;
+
+		case RESPONSE_INVITEUPDATE:
+			Log.i(getClass(),"inviteUpdate");
+			Platform.runLater( () -> {
+				FXMLLoader loader = new FXMLLoader(ClientInfo.getResource(CommonPathAddress.InviteLayout));
+				Parent p=null;
+				try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
+				Scene scene = new Scene(p);
+				
+				Stage s = new Stage();
+				s.initOwner(primaryStage);
+				s.initModality(Modality.APPLICATION_MODAL);
+				s.setScene(scene);
+				s.show();
+				InviteController inviteCon = InviteController.getCon();	/** 초대기능 ListView*/
+				Log.i(getClass(), "invite 실행");
+				ObservableList<Member> memberList = FXCollections.observableArrayList(message.getMemberList());
+				inviteCon.setListView(memberList);
+			});
+
+
+			break;
 		default:
 		}
 	}
@@ -213,6 +296,8 @@ public class ClientThread implements Runnable {
 		if(ClientInfo.currentMember.equals(message.getFrom())) {
 			Platform.runLater(goWaitingRoom);
 		}
+
+
 		/**
 		 * 대기실에 있다면 리스트를 업데이트 시켜라
 		 */
@@ -238,6 +323,7 @@ public class ClientThread implements Runnable {
 		/**
 		 * 현재 전송된 메시지와 같은 방에 들어와 있다면 List를 업데이트 시켜라
 		 */
+
 		if(ClientInfo.currentRoom.getRoom_num() == message.getrInfo().getRoom_num()) 
 			Platform.runLater( () -> {
 				updateChattingRoomList(message);				
@@ -261,7 +347,10 @@ public class ClientThread implements Runnable {
 			ObservableList<RoomInfo> roomList = FXCollections.observableArrayList(msg.getRoomList());
 			con.setTableView(roomList);
 		}
+
 	}
+
+
 
 	/** 
 //	 * updateChattingRoom
@@ -270,6 +359,25 @@ public class ClientThread implements Runnable {
 		ChattingRoomController con = ChattingRoomController.getController();
 		ObservableList<Member> roomMemberList = FXCollections.observableArrayList(msg.getRoomMemberList());
 		con.setListView(roomMemberList);
+		/** 귓속말 전용 리스트*/
+		ObservableList<String> whisperList = FXCollections.observableArrayList();
+
+//		for(Member m :roomMemberList) {
+//			String name = m.getName();
+//			if(name.equals(ClientInfo.currentMember.getName()))
+//				continue;
+//			whisperList.add(name);
+//		}
+		con.setWhisperView(roomMemberList);
+	}
+
+	private void updateInviteForm(Message msg) {
+		InviteController inviteCon = InviteController.getCon();	/** 초대기능 ListView*/
+		ObservableList<Member> memberList = FXCollections.observableArrayList(msg.getMemberList());
+		if(inviteCon!=null) {
+			Log.i(getClass(), "invite 실행");
+			inviteCon.setListView(memberList);
+		}
 	}
 
 }

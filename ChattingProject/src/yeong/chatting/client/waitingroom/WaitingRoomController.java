@@ -8,6 +8,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.ListView;
@@ -15,8 +17,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import yeong.chatting.client.action.ActionInfo;
-import yeong.chatting.client.controller.BaseController;
+import yeong.chatting.client.base.action.ActionInfo;
+import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.client.util.Place;
 import yeong.chatting.model.Member;
@@ -58,12 +60,20 @@ public class WaitingRoomController extends BaseController {
 	private void create() {
 		ClientInfo.currentMember.setPlace(Place.CreateRoom);
 		action(new ActionInfo("Go",createBtn,CommonPathAddress.CreateRoomLayout));
+		
 	}
 	
 	@FXML
 	private void enter() {
 		ClientInfo.currentMember.setPlace(Place.ChattingRoom);
 		ActionInfo info = new ActionInfo("EnterRoom", enterBtn, CommonPathAddress.ChattingRoomLayout);
+		if(roomList.getSelectionModel().getSelectedItem() == null) {
+			Alert alert = new Alert(AlertType.ERROR, "들어갈 방을 선택해주십시오");
+			alert.setHeaderText("방을 선택해주세요 : ");
+			alert.setTitle("에러");
+			alert.showAndWait();
+			return;
+		}
 		info.setUserDatas(roomList.getSelectionModel().getSelectedItem());
 		action(info);
 	}
@@ -137,6 +147,7 @@ public class WaitingRoomController extends BaseController {
 		rHost.prefWidthProperty().bind(roomList.prefWidthProperty().multiply(0.2));
 		
 		roomList.getColumns().setAll(rIndex, rTitle, rMembers, rHost);
+		
 	}
 	
 }

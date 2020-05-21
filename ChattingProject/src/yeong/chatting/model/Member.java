@@ -13,17 +13,15 @@ public class Member implements Serializable{
 	private static final long serialVersionUID = -8515944973869516702L;
 	private String id;
 	private String password;
-	private String  name;
+	private String name;
 	private String email;
+	private String isLogin;
 	
 	private Place place;
 	
-	public Place isWaitingRoom() {
-		return place;
-	}
-	public void setPlace(Place place) {
-		this.place = place;
-	}
+	
+	
+	
 	public Member(String id, String password) {
 		this.id = (id);
 		this.password =(password);
@@ -37,6 +35,23 @@ public class Member implements Serializable{
 		this.email = (email);
 	}
 	
+	
+	
+	public String getLogin() {
+		return isLogin;
+	}
+
+	public void setLogin(String isLogin) {
+		this.isLogin = isLogin;
+	}
+	
+	public Place isWaitingRoom() {
+		return place;
+	}
+
+	public void setPlace(Place place) {
+		this.place = place;
+	}
 	public String getId() {
 		return id;
 	}

@@ -16,8 +16,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import yeong.chatting.client.action.ActionInfo;
-import yeong.chatting.client.controller.BaseController;
+import yeong.chatting.client.base.action.ActionInfo;
+import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.util.Log;
 
 
@@ -58,6 +58,8 @@ public class RegistryController extends BaseController{
 		passwordCheck.setOnKeyPressed(e->{
 			initPasswordField();
 		});
+		
+		
 	}
 
 	@FXML
@@ -66,6 +68,12 @@ public class RegistryController extends BaseController{
 			Alert alert = new Alert(AlertType.WARNING, "ID Check를 먼저해주세요");
 			alert.showAndWait();
 			id.requestFocus();
+			return;
+		}
+
+		if(!passCheck) {
+			Alert alert = new Alert(AlertType.WARNING,"비밀번호 확인란을 다시 확인해주세요");
+			alert.showAndWait();
 			return;
 		}
 		ActionInfo registryAction = new ActionInfo("Registry",registryBtn);
@@ -80,11 +88,6 @@ public class RegistryController extends BaseController{
 	private void idCheck() {
 		if(id.getText().trim().length()==0) {
 			Alert alert = new Alert(AlertType.WARNING,"ID는 공백이 될 수 없습니다."); 
-			alert.showAndWait();
-			return;
-		}
-		if(!passCheck) {
-			Alert alert = new Alert(AlertType.WARNING,"비밀번호 확인란을 다시 확인해주세요");
 			alert.showAndWait();
 			return;
 		}

@@ -1,10 +1,14 @@
 package yeong.chatting.server.main.action;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
-import yeong.chatting.client.action.ActionInfo;
+import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.server.action.CommonAction;
 import yeong.chatting.server.thread.ServerThread;
 import yeong.chatting.util.Log;
@@ -20,14 +24,14 @@ public class StartButtonAction implements CommonAction {
 		log = (TextArea)info.getCons()[0];
 		toggle = (Button)info.getCons()[1];
 		
-		if(toggle.getText().equals("서버 구동")) {
+		if(toggle.getText().equals("서버 시작")) {
 			t.start();
 			setText("서버 중지");
-			appendLog("[서버 시작]" + "\n");
+			appendLog("서버를 시작합니다" + "\n");
 		} else {
 			t.close();
-			setText("서버 구동");
-			appendLog("[서버 중지]"+ "\n");
+			setText("서버 시작");
+			appendLog("서버를 중지합니다"+ "\n");
 		}
 	}
 	
@@ -42,7 +46,10 @@ public class StartButtonAction implements CommonAction {
 	
 	private void appendLog(String str) {
 		Platform.runLater(()-> {
-			log.appendText(str);
+			Date now = Calendar.getInstance().getTime();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			String time = sdf.format(now);
+			log.appendText("["+time +"] " + str);
 		});
 	}
 	

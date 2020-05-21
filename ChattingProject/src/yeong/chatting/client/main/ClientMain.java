@@ -2,20 +2,40 @@ package yeong.chatting.client.main;
 
 import java.util.Vector;
 
+import javax.jws.soap.InitParam;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
+import yeong.chatting.client.base.action.GoAction;
+import yeong.chatting.client.chattingroom.ChattingRoomController;
+import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.client.util.ClientThread;
 import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.model.Member;
+import yeong.chatting.model.Message;
 import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
+import yeong.chatting.util.ProtocolType;
 
 public class ClientMain extends Application{
+
 	
-	private static Vector<Member> currentMemberList;
+	@Override
+	public void init() throws Exception {
+		super.init();
+		try { 
+			Class.forName("yeong.chatting.client.util.ThreadUtil");
+		} catch(ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -23,6 +43,8 @@ public class ClientMain extends Application{
 		Parent root = (Parent)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setResizable(false);
+
+
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("·Î±×ÀÎ È­¸é");
 		primaryStage.show();
@@ -30,27 +52,29 @@ public class ClientMain extends Application{
 		Thread thread = new Thread(new ClientThread(ThreadUtil.getOis(),ThreadUtil.getOos(),primaryStage));
 		thread.setDaemon(true);
 		thread.start();
-		
 	}
-	
-	
+
+
+	@Override
+	public void stop() throws Exception {
+		if(ClientInfo.currentRoom != null) {
+			Message exitRequest = new Message(ProtocolType.REQUEST_EXITROOM, ClientInfo.currentMember, ClientInfo.currentRoom);
+			ThreadUtil.getOos().writeObject(exitRequest);
+			Thread.sleep(1000);
+			Message logoutRequest = new Message(ProtocolType.REQUEST_LOGOUT, ClientInfo.currentMember);
+			ThreadUtil.getOos().writeObject(logoutRequest);				
+		}  else if(ClientInfo.currentMember != null){
+			Log.i("currentMember : " + ClientInfo.currentMember);
+			Message logoutRequest = new Message(ProtocolType.REQUEST_LOGOUT, ClientInfo.currentMember);
+			ThreadUtil.getOos().writeObject(logoutRequest);			
+		}
+		super.stop();
+	}
 	/**
-	 * chatProject ï¿½ï¿½ï¿½ï¿½
+	 * chatProject ¸ÞÀÎ ½ÇÇà
 	 */
 	public static void main(String[] args) {
-		try { 
-			Class.forName("yeong.chatting.client.util.ThreadUtil");
-		} catch(ClassNotFoundException e) {
-			e.printStackTrace();
-		}
- 		launch(args);
-	}
-	
-	public static void setList(Vector<Member> list) {
-		currentMemberList = list;
-	}
-	
-	public static Vector<Member> getList() {
-		return currentMemberList;
+		
+		launch(args);
 	}
 }

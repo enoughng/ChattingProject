@@ -54,6 +54,7 @@ public class ServerDAO extends CommonDao{
 			loginMember.setPassword(rs.getString("password"));
 			loginMember.setName(rs.getString("name"));
 			loginMember.setEmail(rs.getString("email"));
+			loginMember.setLogin(rs.getString("LOGIN_YN"));
 		}
 		return loginMember;
 	}
@@ -61,12 +62,18 @@ public class ServerDAO extends CommonDao{
 	 *  입력한 정보를 가지고 방정보를 DB에 삽입한다.
 	 */
 	public RoomInfo insertRoom(RoomInfo room, Member from) throws SQLException {
-		PreparedStatement pstmt = openConnection("InsertRoom");
+		PreparedStatement pstmt;
+		/** INSERT */
+		if(room.isChk()) {
+			pstmt  = openConnection("InsertRoomY");
+		} else {
+			pstmt  = openConnection("InsertRoomN");			
+		}
 		pstmt.setString(1, room.getRoom_title());
 		pstmt.setString(2, room.getRoom_pwd()); 
 		pstmt.setString(3, room.getRoom_host());
 		pstmt.executeUpdate();
-
+		/** SELECT */
 		pstmt = openConnection("InsertRoomResult");
 		pstmt.setString(1, room.getRoom_host());
 		ResultSet rs = pstmt.executeQuery();
@@ -75,11 +82,13 @@ public class ServerDAO extends CommonDao{
 		roomMemberList.add(from);
 		while(rs.next()) {
 			int index = rs.getInt("Rindex");
-			String title = rs.getString("rTitle");
+			String title = rs.getString(	"rTitle");
 			String password = rs.getString("rPassword");
 			String host = rs.getString("rHost");
+			boolean chk = rs.getString("rSecret").equals("Y") ? true : false;
 			ServerThread.roomMemberList.put(index, roomMemberList);
 			rInfo = new RoomInfo(index,title,password,host);
+			rInfo.setChk(chk);
 			rInfo.setRoom_members(ServerThread.roomMemberList.size());
 		}
 		return rInfo; 
@@ -95,21 +104,21 @@ public class ServerDAO extends CommonDao{
 		ResultSet rs = pstmt.executeQuery();
 		RoomInfo rInfo = null;
 
-		
+
 		while(rs.next()) {
 			// DB로 부터 현재 방정보를 변수로 담는다.
 			int index = rs.getInt("Rindex");
 			String title = rs.getString("Rtitle");
 			String password = rs.getString("Rpassword");
 			String host = rs.getString("Rhost");
-			
+
 			//현재 방정보 Map에 있는 인원수를 DB의 index값으로 찾는다.
 			int roomMemberListSize =0;
 			if(!(ServerThread.roomMemberList.get(index) == null))
 				roomMemberListSize = ServerThread.roomMemberList.get(index).size();
-			
+
 			rInfo = new RoomInfo(index, title, password, host,roomMemberListSize);
-			
+
 			rooms.add(rInfo);
 		}
 		return rooms;
@@ -129,26 +138,27 @@ public class ServerDAO extends CommonDao{
 			String title = rs.getString("Rtitle");
 			String password = rs.getString("Rpassword");
 			String host = rs.getString("Rhost");
-			RoomInfo DBroomInfo = new RoomInfo(index, title, password, host);
+			String rSecret = rs.getString("RSecret");
+			RoomInfo DBroomInfo = new RoomInfo(index, title, password, host, (rSecret.equals("Y"))? true : false);
 			checkedRoomInfo = DBroomInfo;
 		}
 
 		return checkedRoomInfo;
 	}
-	
+
 	public void deleteRoom(RoomInfo info) throws SQLException {
 		PreparedStatement pstmt = openConnection("DeleteRoom");
 		pstmt.setInt(1, info.getRoom_num());
 		pstmt.setString(2, info.getRoom_host());
 		pstmt.executeUpdate();
 	}
-	
+
 	public void deleteRooms() throws SQLException {
 		PreparedStatement pstmt = openConnection("DeleteRooms");
 		pstmt.executeUpdate();
 		closeConnection();
 	}
-	
+
 	/**
 	 * String 값이면 DB에 해당 ID값이 있음
 	 * null 값이면 DB에 해당 ID값이 없음 
@@ -157,7 +167,7 @@ public class ServerDAO extends CommonDao{
 		PreparedStatement pstmt = openConnection("CheckID");
 		pstmt.setString(1, msg);
 		ResultSet rs =pstmt.executeQuery();
-		
+
 		String id = null;
 		while(rs.next()) {
 			id = rs.getString("id");
@@ -165,11 +175,31 @@ public class ServerDAO extends CommonDao{
 		return id;
 	}
 
-//	public Map<Integer, Vector<Member>> initMap(Map<Integer, Vector<Member>> map) {
-//		
-//		PreparedStatement pstmt = openConnection("InitMap")
-//		
-//		return map;
-//	}
+	public boolean updateLogin(Member member, boolean login_YN) throws SQLException {
+
+		PreparedStatement pstmt = openConnection("UpdateLogin");
+		pstmt.setString(1, login_YN ? "Y" : "N");
+		pstmt.setString(2, member.getId());
+		pstmt.setString(3, member.getPassword());
+
+		int result = pstmt.executeUpdate();
+		if(result==1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void UpdateLogoutAll() throws SQLException {
+		PreparedStatement pstmt = openConnection("UpdateLogoutAll");
+		pstmt.executeUpdate();
+	}
+
+	//	public Map<Integer, Vector<Member>> initMap(Map<Integer, Vector<Member>> map) {
+	//		
+	//		PreparedStatement pstmt = openConnection("InitMap")
+	//		
+	//		return map;
+	//	}
 
 }

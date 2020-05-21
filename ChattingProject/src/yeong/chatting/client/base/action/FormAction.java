@@ -1,4 +1,4 @@
-package yeong.chatting.client.action;import java.io.IOException;
+package yeong.chatting.client.base.action;import java.io.IOException;
 import java.net.URL;
 
 import javafx.fxml.FXMLLoader;
@@ -7,8 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.JMetroStyleClass;
+import jfxtras.styles.jmetro.Style;
+import yeong.chatting.client.util.ClientInfo;
+import yeong.chatting.model.Message;
 import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
+import yeong.chatting.util.ProtocolType;
 
 /**
  * @FileName  : RegistryAction.java
@@ -35,9 +41,9 @@ public class FormAction implements CommonAction {
 			stage.setScene(scene);
 			if(action.getAbsoluteDestination().indexOf(getClass().getResource(CommonPathAddress.RegistryLayout).toString())!=-1) {
 				stage.initOwner(action.getPrimaryStage());
-				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.setTitle("회원가입 창");
 			}
+			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setResizable(false);
 			stage.show();
 
@@ -47,12 +53,13 @@ public class FormAction implements CommonAction {
 		}
 	}
 	
-	public static void addForm(URL url) throws IOException {
-		FXMLLoader loader = new FXMLLoader(url);
-		Parent root = (Parent)loader.load();
-		Scene scene = new Scene(root);
-		Stage stage = new Stage();
-		stage.setScene(scene);
-		stage.show();
-	}
+	 
+//	public static void addForm(URL url) throws IOException {
+//		FXMLLoader loader = new FXMLLoader(url);
+//		Parent root = (Parent)loader.load();
+//		Scene scene = new Scene(root);
+//		Stage stage = new Stage();
+//		stage.setScene(scene);
+//		stage.show();
+//	}
  }

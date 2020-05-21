@@ -28,7 +28,6 @@ import yeong.chatting.util.ProtocolType;
 
 public class RequestCheck {
 
-	private MainController controller = MainController.getMainController();
 
 	private ServerDAO sDao;
 
@@ -41,6 +40,9 @@ public class RequestCheck {
 	
 	private InputThread t;
 	
+	private MainController controller = MainController.getMainController();
+
+	
 	public RequestCheck(InputThread t, Message msg) throws SQLException, IOException {
 		this.t = t;
 		request = msg;
@@ -52,15 +54,12 @@ public class RequestCheck {
 		case REQUEST_LOGIN:
 			// 현재 사용자 수
 			response = login();
-			isBroadType = false;
 			break;
 		case REQUEST_IDCHECK:
 			response = checkID();
-			isBroadType = false;
 			break;
 		case REQUEST_REGISTRY:
 			response = registry();
-			isBroadType = false;
 			break;
 		case REQUEST_WAITINGROOM_MEMBER:
 			response = getMembers();
@@ -68,26 +67,31 @@ public class RequestCheck {
 			break;
 		case REQUEST_LOGOUT:
 			response = logout();
-			isBroadType = false;
 			break;
 		case REQUEST_CREATEROOM:
 			response = createRoom();
-			isBroadType = false;
 			break;
 		case REQUEST_ENTERROOM:
 			response = enterRoom();
-			isBroadType = false;
 			break;
 		case REQUEST_EXITROOM:
-			isBroadType = false;
 			response = exitRoom();
 			break;
 		case REQUEST_SEND:
-			isBroadType = false;
 			response = send();
 			break;
+		case REQUEST_WHISPER:
+			response = whisper();
+			break;
+		case REQUEST_INVITE:
+			response = invite();
+			break;
+		case REQUEST_INVITEUPDATE:
+			response = inviteUpdate();
+			break;
 		default:
-			response = null;
+			response = request;
+			
 		}
 
 		return response;
@@ -96,15 +100,14 @@ public class RequestCheck {
 	public boolean sendType() {
 		return isBroadType;
 	}
-
-	/** 
-	 *  공통 기능들
-	 *  
-	 *  서버 프로그램에 Log남기기
+	
+	/**
+	 * 서버UI에 로그찍기
+	 * @param msg
 	 */
 	private void appendLog(String msg) {
 
-		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String time = sdf.format(Calendar.getInstance().getTime());
 
 		Platform.runLater(new Runnable() {
@@ -114,29 +117,32 @@ public class RequestCheck {
 			}
 		});
 	}
+	
 
 	/**
 	 * switch case 문에 따른 메소드들
 	 * 
 	 * 로그인 요청에 따른 Select조회 및 리턴
 	 * 
-	 * @throws SQLException
+	 * @throws SQLExcep8tion
 	 */
 	private Message login() throws SQLException {
 		Message response;
 		ProtocolType responseProtocol;
 		Member loginMember = sDao.checkLogin(request.getFrom()); // DB 조회한 멤버
-		if (loginMember != null) { // 조회한 멤버가 있다면
-			t.setCurrentID(loginMember.getId());
-			appendLog(loginMember.getId() + "(" + loginMember.getName() + ")님이 로그인 하셨습니다.");
-			responseProtocol = ProtocolType.RESPONSE_LOGIN_SUCCESS;
-			ServerThread.memberList.add(loginMember);
-			ServerThread.isLogout=false;
-			response = new Message(responseProtocol, loginMember);
-			appendLog("현재 인원 : " + ServerThread.serverThreads + "\nMember size : " + ServerThread.serverThreads.size());
+		if (loginMember != null && loginMember.getLogin().equals("N")) { // 조회한 멤버가 있으면서 그 멤버가 로그인한 상태가 아니라면
+			
+			sDao.updateLogin(loginMember, true);
+			t.setCurrentID(loginMember.getId()); // InputThread의 이름을 현재 로그인한 멤버의 ID로 설정한다.
+			responseProtocol = ProtocolType.RESPONSE_LOGIN_SUCCESS; // 보낼 메시지의 프로토콜 타입을 정해준다.
+			ServerThread.memberList.add(loginMember); // 서버쓰레드에 있는 멤버리스트를 더해준다.
+			ServerThread.isLogout=false; // 서버쓰레드 로그인상태변수를 로그인상태로 만들어준다.
+			response = new Message(responseProtocol, loginMember); // 응답메시지를 만든다.
+			
+			appendLog(loginMember.getId() + "(" + loginMember.getName() + ")님이 로그인 하셨습니다."); // 로그폼에 로그인을 띄워준다.
 		} else {
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_FAIL;
-			response = new Message(responseProtocol, request.getFrom());
+			response = new Message(responseProtocol, loginMember);
 		}
 
 		return response;
@@ -148,14 +154,14 @@ public class RequestCheck {
 	private Message logout() throws SQLException {
 
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_LOGOUT;
+		sDao.updateLogin(request.getFrom(), false);
 		ServerThread.isLogout =true;
 		t.setCurrentID("");
 		ServerThread.memberList.remove(request.getFrom());
-		appendLog(request.getFrom().getId() + "님이 로그아웃 하셨습니다.");
-		appendLog("현재 인원 : " + ServerThread.memberList + "\n 인원수 : " +ServerThread.memberList.size());
-
 		Message response = new Message(responseProtocol, request.getFrom());
 		response.setMemberList(new Vector<Member>(ServerThread.memberList));
+		
+		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() +")"+ "님이 로그아웃 하셨습니다.");
 		return  response;
 	}
 
@@ -168,7 +174,8 @@ public class RequestCheck {
 		sDao.insertMember(request.getFrom()); // 데이터베이스 insert문 삽입
 		responseProtocol = ProtocolType.RESPONSE_REGISTRY_SUCCESS;
 		response = new Message(responseProtocol, request.getFrom());
-
+		
+		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 회원등록을 하셨습니다.");
 		return response;
 	}
 
@@ -216,6 +223,7 @@ public class RequestCheck {
 			newList.add(request.getFrom());
 			ServerThread.roomMemberList.put(result.getRoom_num(), newList);
 			response.setRoomMemberList(newList);
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+result.getRoom_num()+"번) "+result.getRoom_title()+" 방을 만드셨습니다.");
 		} else {
 			response = new Message(ProtocolType.RESPONSE_CREATEROOM_FAIL, request.getFrom());
 		}
@@ -245,13 +253,13 @@ public class RequestCheck {
 		}
 		/* 요청된 방정보를 이용하여 DB에서 있는지 조회 */
 		RoomInfo checkedRoomInfo = sDao.hasRoom(requestRoomInfo);
-		ProtocolType responseProtocol;
-		/* 있으면 success 없으면 fail로 응답 */
-		if(checkedRoomInfo != null) {
-			responseProtocol = ProtocolType.RESPONSE_ENTERROOM_SUCCESS;
-		} else {
-			responseProtocol = ProtocolType.RESPONSE_ENTERROOM_FAIL;
-		}
+		/* 비밀번호가 필요하면 비밀번호가 필요하다고 리턴~ */
+		if(checkedRoomInfo != null && checkedRoomInfo.isChk() && !(requestRoomInfo.getRoom_pwd().equals(checkedRoomInfo.getRoom_pwd()))) {
+			responseProtocol = ProtocolType.RESPONSE_ENTERROOM_PASSWORD;
+			Message response = new Message(responseProtocol, from, checkedRoomInfo);
+			return response;
+		} 
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_ENTERROOM_SUCCESS;
 		Message response = new Message(responseProtocol, from);
 		ServerThread.memberList.remove(request.getFrom());
 		//요청한 멤버를 현재 맵 데이터에 넣어준다.
@@ -260,6 +268,7 @@ public class RequestCheck {
 		// index값을 이용하여 ServerThread에 있는 Map을 조회하여 해당 방번호에 존재하는 Vector를 반환해준다.
 		response.setRoomMemberList(new Vector<Member>(roomMemberList));
 		response.setrInfo(checkedRoomInfo); // RoomInfo
+		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+checkedRoomInfo.getRoom_num()+"번) "+checkedRoomInfo.getRoom_title()+"에 입장하셨습니다.");
 		return response;
 	}
 
@@ -278,16 +287,19 @@ public class RequestCheck {
 		ProtocolType responseProtocol;
 
 		RoomInfo DBrInfo = sDao.hasRoom(request.getrInfo());
-
 		
 		if(DBrInfo.getRoom_host().equals(request.getFrom().getName())) { //나가는사람이 방장이면 방폭파
 			isBroadType = false;
 			responseProtocol = ProtocolType.RESPONSE_EXITROOM_HOST;
 			sDao.deleteRoom(DBrInfo);
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+DBrInfo.getRoom_num()+"번) "+DBrInfo.getRoom_title()+" 방을 파괴하셨습니다.");
+
 		} else { // 나가는사람이 방장이 아니면 방 나가기
 			isBroadType = false;
 			responseProtocol = ProtocolType.RESPONSE_EXITROOM;
 			ServerThread.roomMemberList.get(DBrInfo.getRoom_num()).remove(request.getFrom());
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+DBrInfo.getRoom_num()+"번) "+DBrInfo.getRoom_title()+" 방에서 나가셨습니다.");
+
 		}
 		
 		ServerThread.memberList.add(request.getFrom()); // 요청된값 대기실인원으로 추가
@@ -309,8 +321,19 @@ public class RequestCheck {
 		// 프로토콜과 방정보만 바꿔준다.
 		request.setProtocol(responseProtocol);
 		request.setrInfo(dbRoomInfo);
+//		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방에서 채팅하셨습니다.");
 		return request;
+		
 	}
+	
+	private Message whisper() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_WHISPER;
+		Message response = new Message(request);
+		response.setProtocol(responseProtocol);
+		
+		return response;
+	}
+	
 	
 	private Message checkID() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_IDCHECK;
@@ -318,6 +341,20 @@ public class RequestCheck {
 
 		Message response = new Message(responseProtocol,isHave);
 		response.setFrom(new Member(request.getMsg(),null));
+		return response;
+	}
+	
+	private Message invite() {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_INVITE_REQUEST;
+		Message response = new Message(request);
+		response.setProtocol(responseProtocol);
+		return response;
+	}
+	
+	private Message inviteUpdate() {
+		Message response = new Message(request);
+		response.setProtocol(ProtocolType.RESPONSE_INVITEUPDATE);
+		response.setMemberList(new Vector<Member>(ServerThread.memberList));
 		return response;
 	}
 }

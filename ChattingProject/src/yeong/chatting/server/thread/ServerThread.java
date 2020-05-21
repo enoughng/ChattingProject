@@ -10,6 +10,8 @@ import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
 import yeong.chatting.model.RoomInfo;
@@ -48,9 +50,14 @@ public class ServerThread extends Thread{
 			server = new ServerSocket(9500);
 
 		} catch (IOException e1) {
-			e1.printStackTrace();
-			if(!server.isClosed()) {
+			try {if(!server.isClosed()) {
 				close();
+			} } catch(NullPointerException e ) {
+				Alert alert = new Alert(AlertType.ERROR, "포트가 이미 열려있습니다.");
+				alert.setTitle("에러");
+				alert.setHeaderText("에러  : ");
+				alert.showAndWait();
+				System.exit(0);
 			}
 		}
 		threadPool = Executors.newCachedThreadPool();
@@ -61,7 +68,8 @@ public class ServerThread extends Thread{
 		try {
 
 			sDao.deleteRooms();
-
+			sDao.UpdateLogoutAll();
+			
 			if(threadPool != null && !threadPool.isShutdown())
 				threadPool.shutdownNow();
 

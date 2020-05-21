@@ -1,4 +1,4 @@
-package yeong.chatting.client.action;
+package yeong.chatting.client.base.action;
 
 import java.net.URL;
 import java.sql.Connection;

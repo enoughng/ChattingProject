@@ -24,13 +24,31 @@ public class Message implements Serializable{
 	ProtocolType protocol;
 	private Member from;
 	
-	private Member to;
+	private String to;
 	private String msg;
 	private RoomInfo rInfo;
 	
 	private Vector<Member> roomMemberList; // 특정 방 접속멤버
 	private Vector<RoomInfo> roomList; // 대기실 방 정보
 	private Vector<Member> memberList; // 대기실 멤버
+	
+	public Message(Message msg) {
+		this.protocol = msg.protocol;
+		this.from = msg.from;
+		this.to = msg.to;
+		this.msg = msg.msg;
+		this.rInfo = msg.rInfo;
+		this.roomList = msg.roomList;
+		this.roomMemberList = msg.roomMemberList;
+		this.memberList = msg.memberList;
+	}
+	
+	public Message(ProtocolType protocol, Member from, String to, String msg) {
+		this.protocol = protocol;
+		this.from = from;
+		this.to = to;
+		this.msg = msg;
+	}
 	
 	
 	public Message(ProtocolType protocol, String msg) {
@@ -80,10 +98,10 @@ public class Message implements Serializable{
 	public void setFrom(Member from) {
 		this.from = from;
 	}
-	public Member getTo() {
+	public String getTo() {
 		return to;
 	}
-	public void setTo(Member to) {
+	public void setTo(String to) {
 		this.to = to;
 	}
 	public String getMsg() {

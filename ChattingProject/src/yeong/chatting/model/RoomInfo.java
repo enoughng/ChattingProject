@@ -15,7 +15,7 @@ public class RoomInfo implements Serializable {
 	private String room_pwd;
 	private String room_host;
 	private int room_members;
-	private boolean isEnter;
+	private boolean chk;
 	
 	public RoomInfo(RoomInfo info) {
 		this.room_num = info.room_num;
@@ -27,18 +27,31 @@ public class RoomInfo implements Serializable {
 
 
 
+	public RoomInfo(int room_num, String room_title, String room_pwd, String room_host, boolean chk) {
+		this.room_num = room_num;
+		this.room_title = room_title;
+		this.room_pwd = room_pwd;
+		this.room_host = room_host;
+		this.chk = chk;
+	}
+
+
+
 	public int getRoom_members() {
 		return room_members;
 	}
 	public void setRoom_members(int room_members) {
 		this.room_members = room_members;
 	}
-	public boolean isEnter() {
-		return isEnter;
+	
+	public boolean isChk() {
+		return chk;
 	}
-	public void setEnter(boolean isEnter) {
-		this.isEnter = isEnter;
+
+	public void setChk(boolean chk) {
+		this.chk = chk;
 	}
+
 	public RoomInfo(String room_title, String room_pwd, String room_host) {
 		this.room_title = room_title;
 		this.room_pwd = room_pwd;
@@ -93,7 +106,7 @@ public class RoomInfo implements Serializable {
 	@Override
 	public String toString() {
 		return "RoomInfo [room_num=" + room_num + ", room_title=" + room_title + ", room_pwd=" + room_pwd
-				+ ", room_host=" + room_host + ", room_members=" + room_members + ", isEnter=" + isEnter + "]";
+				+ ", room_host=" + room_host + ", room_members=" + room_members + "]";
 	}
 	
 	

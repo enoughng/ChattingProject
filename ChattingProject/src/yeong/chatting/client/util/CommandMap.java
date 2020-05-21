@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.base.action.CommonAction;
 import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
 

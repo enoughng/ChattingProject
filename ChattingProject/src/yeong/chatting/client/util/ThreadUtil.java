@@ -50,8 +50,7 @@ public class ThreadUtil {
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				ois = new ObjectInputStream(socket.getInputStream());
 			} catch (IOException e) {
-				Log.i("ThreadUtil : 서버가 닫혀있습니다.");
-				System.exit(0);
+				
 			}
 		}
 	}

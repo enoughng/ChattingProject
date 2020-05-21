@@ -28,15 +28,17 @@ import yeong.chatting.util.ProtocolType;
  * 서버의 InputStream 클래스
  *
  */
-public class InputThread implements Runnable{
+public class InputThread implements Runnable {
 
-	//InputThread를 구별하기 위한 식별자
+	// InputThread를 구별하기 위한 식별자
 	private int inputThreadID;
 
-	//현재 접속한 유저의 이름을 저장하기위한 변수
+	// 현재 접속한 유저의 이름을 저장하기위한 변수
 	private String currentMemberID;
-
-	//로그찍기위한 MainController
+	private String currentMemberName;
+	
+	
+	// 로그찍기위한 MainController
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
@@ -61,20 +63,22 @@ public class InputThread implements Runnable{
 		try {
 			ois = new ObjectInputStream(socket.getInputStream());
 			oos = new ObjectOutputStream(socket.getOutputStream());
-			while(true) {	
+			while (true) {
 
-				request = (Message)ois.readObject();
+				request = (Message) ois.readObject();
 				RequestCheck rc = new RequestCheck(this, request);
 				response = rc.result();
 				isBroadcast = rc.sendType();
 				
-				if(isBroadcast) {
+				Log.i(getClass(),request.getProtocol().toString());
+				Log.i(getClass(),response.getProtocol().toString());
+				if (isBroadcast) {
 					broadcastSend(response);
 				} else {
 					send(response);
 				}
 
-				switch(response.getProtocol()) {
+				switch (response.getProtocol()) {
 				case RESPONSE_CREATEROOM:
 					updateWaitingRoom(request);
 					break;
@@ -94,24 +98,25 @@ public class InputThread implements Runnable{
 				case RESPONSE_SEND:
 					chattingRoomSend(response);
 					break;
-
-
+				case RESPONSE_WHISPER:
+					chattingRoomWhisper(response);
+					break;
+				case RESPONSE_INVITE_REQUEST:
+					waitingRoomInvite(response);
 				default:
 				}
 
-
 			}
 
-		} catch(IOException e) {
+		} catch (IOException e) {
 
 			try {
 				ServerThread.serverThreads.remove(this);
-				if(request!=null)
-				ServerThread.memberList.remove(request.getFrom());
-				Log.i(getClass(), "현재 List 목록 : " + ServerThread.serverThreads);
+				if (request != null)
+					ServerThread.memberList.remove(request.getFrom());
 
 				socket.close();
-				Log.e("클라이언트와 연결이 끊겼습니다.");	
+				Log.e("클라이언트와 연결이 끊겼습니다.");
 			} catch (IOException e1) {
 				Log.e("연결이 끊긴 소켓과 연결 끊기 실패");
 			}
@@ -121,11 +126,13 @@ public class InputThread implements Runnable{
 			Log.e(getClass(), e);
 		}
 	}
+	
 
 	/**
-	 *  Message를 보내는 기능
+	 * Message를 보내는 기능
+	 * 
 	 * @param msg
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void send(Message response) throws IOException {
 		oos.writeObject(response);
@@ -139,20 +146,20 @@ public class InputThread implements Runnable{
 		return currentMemberID;
 	}
 
-	public void setCurrentID(String ID) { 
+	public void setCurrentID(String ID) {
 		currentMemberID = ID;
 	}
-	
-	
+
 	/**
 	 * 자기자신을 제외한 같은방의 모든 멤버에게 보내라
 	 */
 	private void exitBrokenRoom(Message response) throws IOException {
 		Vector<Member> roomMemberList = ServerThread.roomMemberList.get(response.getrInfo().getRoom_num());
-		for(Member m: roomMemberList) {
-			if(m.getId().equals(getCurrentID())) continue;
-			for(InputThread t :ServerThread.serverThreads) {
-				if(m.getId().equals(t.getCurrentID())) {
+		for (Member m : roomMemberList) {
+			if (m.getId().equals(getCurrentID()))
+				continue;
+			for (InputThread t : ServerThread.serverThreads) {
+				if (m.getId().equals(t.getCurrentID())) {
 					response.setProtocol(ProtocolType.RESPONSE_FORCEDEXIT);
 					ServerThread.memberList.add(m);
 					response.setMemberList(new Vector<Member>(ServerThread.memberList));
@@ -161,16 +168,18 @@ public class InputThread implements Runnable{
 			}
 		}
 	}
+
 	/**
-	 * 같은 채팅방에 있는 모든 멤버에게 메시지 전달 
+	 * 같은 채팅방에 있는 모든 멤버에게 메시지 전달
 	 */
 	private void chattingRoomSend(Message response) throws IOException {
 		Vector<Member> roomMemberList = ServerThread.roomMemberList.get(response.getrInfo().getRoom_num());
-		for(Member m: roomMemberList) {
-			if(m.getId().equals(getCurrentID())) continue;
-		
-			for(InputThread t :ServerThread.serverThreads) {
-				if(m.getId().equals(t.getCurrentID())) {
+		for (Member m : roomMemberList) {
+			if (m.getId().equals(getCurrentID()))
+				continue;
+
+			for (InputThread t : ServerThread.serverThreads) {
+				if (m.getId().equals(t.getCurrentID())) {
 					t.send(response);
 				}
 			}
@@ -178,33 +187,53 @@ public class InputThread implements Runnable{
 	}
 
 	/**
-	 * 전체 메시지 보내기
-	 * @throws IOException 
+	 * 귓속말
 	 */
-	private void broadcastSend(Message response) throws IOException {
-		for(InputThread t :ServerThread.serverThreads) {
-			t.send(response);
+	private void chattingRoomWhisper(Message response) throws IOException {
+		for(InputThread t:ServerThread.serverThreads) {
+			if(response.getTo().equals(t.currentMemberID))
+				t.send(response);
+		}
+	}
+
+
+	private void waitingRoomInvite(Message response) throws IOException {
+		for(InputThread t:ServerThread.serverThreads) {
+			if(response.getTo().equals(t.currentMemberID))
+				t.send(response);
 		}
 	}
 	
 
 	/**
+	 * 전체 메시지 보내기
+	 * 
+	 * @throws IOException
+	 */
+	private void broadcastSend(Message response) throws IOException {
+		for (InputThread t : ServerThread.serverThreads) {
+			t.send(response);
+		}
+	}
+
+	/**
 	 * 방목록, 멤버정보를 담아야한다.
-	 * @throws IOException 
-	 * @throws SQLException 
+	 * 
+	 * @throws IOException
+	 * @throws SQLException
 	 */
 	private void updateWaitingRoom(Message request) throws IOException, SQLException {
 
 		Message response = null;
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_UPDATEWAITINGROOM;
 
-		//1. 담아줄 방목록을 DB에서 가져온다.
+		// 1. 담아줄 방목록을 DB에서 가져온다.
 		Vector<RoomInfo> rooms = sDao.getRooms();
 
-		//2. 담아줄 멤버정보를 ServerThread에서 가져온다.
+		// 2. 담아줄 멤버정보를 ServerThread에서 가져온다.
 		Vector<Member> memberList = ServerThread.memberList;
 
-		//3. 메세지에 실어서 보낸다.
+		// 3. 메세지에 실어서 보낸다.
 		response = new Message(responseProtocol, new Member("Broadcast Server", null));
 		response.setRoomList(new Vector<RoomInfo>(rooms));
 		response.setMemberList(new Vector<Member>(memberList));
@@ -214,7 +243,8 @@ public class InputThread implements Runnable{
 
 	/**
 	 * roomMemberList(Vector)를 담으면 된다.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	private void updateChattingRoom(Message request) throws IOException, SQLException {
 		Message response = null;
@@ -230,8 +260,7 @@ public class InputThread implements Runnable{
 		response.setRoomMemberList(new Vector<Member>(roomMemberList));
 		response.setrInfo(dbRoomInfo);
 
-
-		//4. 브로드캐스트로 전송한다.
+		// 4. 브로드캐스트로 전송한다.
 		broadcastSend(response);
 	}
 

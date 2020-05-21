@@ -1,12 +1,12 @@
 package yeong.chatting.client.registry.action;
 
-import yeong.chatting.client.action.CommonAction;
+import yeong.chatting.client.base.action.ActionInfo;
+import yeong.chatting.client.base.action.CommonAction;
 import yeong.chatting.model.Message;
 
 import java.io.IOException;
 
 import javafx.scene.control.TextField;
-import yeong.chatting.client.action.ActionInfo;
 import yeong.chatting.util.Log;
 import yeong.chatting.util.ProtocolType;
 
