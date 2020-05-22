@@ -1,4 +1,4 @@
-package yeong.chatting.client.util;
+package yeong.chatting.client.thread;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -26,6 +26,8 @@ import yeong.chatting.client.profile.MyProfileController;
 import yeong.chatting.client.profile.ProfileController;
 import yeong.chatting.client.registry.RegistryController;
 import yeong.chatting.client.search.SearchController;
+import yeong.chatting.client.util.ClientInfo;
+import yeong.chatting.client.util.Place;
 import yeong.chatting.client.util.alert.AlertFactory;
 import yeong.chatting.client.util.alert.MyAlert;
 import yeong.chatting.client.waitingroom.WaitingRoomController;
@@ -92,7 +94,7 @@ public class ClientThread implements Runnable {
 			ClientInfo.currentMember = message.getFrom();
 			ClientInfo.currentMember.setPlace(Place.WaitingRoom);
 			try {
-				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, ClientInfo.currentMember));
+				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, new Member(ClientInfo.currentMember)));
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 
@@ -115,7 +117,7 @@ public class ClientThread implements Runnable {
 			break;
 		case RESPONSE_LOGOUT:
 			try {
-				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, ClientInfo.currentMember));
+				oos.writeObject(new Message(ProtocolType.REQUEST_WAITINGROOM_MEMBER, new Member(ClientInfo.currentMember)));
 				ClientInfo.currentMember = null;	
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -157,15 +159,13 @@ public class ClientThread implements Runnable {
 			}
 			break;
 		case RESPONSE_UPDATECHATTINGROOM:
+			Log.i("@@@" + message.getRoomMemberList());
 			if(ClientInfo.currentRoom == null) {
 				try { setWaitingRoom(message); } catch (IOException e) { e.printStackTrace(); }
 				return;
 			}
-			Log.i(getClass(), "!" + ClientInfo.currentMember);
 			if(ClientInfo.currentRoom.getRoom_num() == message.getrInfo().getRoom_num())  {
 				Platform.runLater( () -> {
-					Log.i(getClass(), "업데이트 채팅룸리스트");
-					Log.i(getClass(), "*" + message.getRoomMemberList());
 					updateChattingRoomList(message);				
 				});
 			}
@@ -349,18 +349,42 @@ public class ClientThread implements Runnable {
 			
 			break;
 		case RESPONSE_PROFILE_EDIT:
-			if(Boolean.parseBoolean(message.getMsg())) {
-				Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 성공하였습니다.");
-				alert.setHeaderText("알림");
-				alert.setTitle("성공");
-				alert.showAndWait();
-			} else {
-				Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 실패하였습니다.");
-				alert.setHeaderText("알림");
-				alert.setTitle("실패");
-				alert.showAndWait();
+				if(message.getMsg().equals("true")) {
+					ClientInfo.currentMember.setName(message.getProfile().getNickname());
+					Log.i("**"+ClientInfo.currentMember.getName());
+					Platform.runLater( () -> {
+					Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 성공하였습니다.");
+					alert.setHeaderText("알림");
+					alert.setTitle("성공");
+					alert.showAndWait();
+					});
+				} else {
+					Platform.runLater( () -> {
+					Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 실패하였습니다.");
+					alert.setHeaderText("알림");
+					alert.setTitle("실패");
+					alert.showAndWait();
+					});
+				}
+			break;
+		case RESPONSE_DELETE_ACCOUNT:
+			if(message.getMsg().equals("true")) {
+				Platform.runLater( () -> {
+					Alert alert = new Alert(AlertType.INFORMATION, "지금까지 이용해 주셔서 감사합니다.");
+					alert.setContentText("계정이 성공적으로 삭제되었습니다.");
+					alert.show();
+					Log.i("여기까지 찍히나");
+					ClientInfo.currentMember.setPlace(Place.LoginLayout);
+					MyProfileController con = MyProfileController.getProfileController();
+					con.closeMyProfileController();
+					message.setProtocol(ProtocolType.REQUEST_LOGOUT);
+					try { oos.writeObject(message); } catch (IOException e) { e.printStackTrace(); }
+					primaryStage.close();
+				});
+				
 			}
 			break;
+		
 		default:
 		}
 	}
@@ -488,7 +512,6 @@ public class ClientThread implements Runnable {
 		InviteController inviteCon = InviteController.getCon();	/** 초대기능 ListView*/
 		ObservableList<Member> memberList = FXCollections.observableArrayList(msg.getMemberList());
 		if(inviteCon!=null) {
-			Log.i(getClass(), "invite 실행");
 			inviteCon.setListView(memberList);
 		}
 	}

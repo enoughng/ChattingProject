@@ -69,8 +69,6 @@ public class InputThread implements Runnable {
 				response = rc.result();
 				isBroadcast = rc.sendType();
 				
-				Log.i(getClass(),request.getProtocol().toString());
-				Log.i(getClass(),response.getProtocol().toString());
 				if (isBroadcast) {
 					broadcastSend(response);
 				} else {
@@ -106,6 +104,14 @@ public class InputThread implements Runnable {
 				break;
 				case RESPONSE_INVITE_REJECT:
 					rejectSend(response);
+					break;
+				case RESPONSE_PROFILE_EDIT:
+					if(response.getrInfo()!=null) {
+						updateChattingRoom(response);
+						updateWaitingRoom(response);
+					} else if(response.getMemberList() != null){
+						updateWaitingRoom(response);
+					}
 					break;
 				default:
 				}

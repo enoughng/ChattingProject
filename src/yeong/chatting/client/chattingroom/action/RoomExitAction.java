@@ -17,7 +17,7 @@ public class RoomExitAction implements CommonAction{
 	public void action(ActionInfo info) {
 		
 		ProtocolType requestProtocol = ProtocolType.REQUEST_EXITROOM;
-		Member currentMember = ClientInfo.currentMember;
+		Member currentMember = new Member(ClientInfo.currentMember);
 		RoomInfo rInfo = ClientInfo.currentRoom;
 		Message request = new Message(requestProtocol,currentMember, rInfo);
 		

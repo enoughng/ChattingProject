@@ -6,6 +6,7 @@ import javafx.scene.control.TextField;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.action.CommonAction;
 import yeong.chatting.client.util.ClientInfo;
+import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
 import yeong.chatting.util.Log;
 import yeong.chatting.util.ProtocolType;
@@ -19,7 +20,7 @@ public class SendAction implements CommonAction{
 		TextField chat = (TextField)info.getCons()[0];
 		String msg = chat.getText();
 		if(msg.equals("")) return;
-		Message request = new Message(requestProtocol, ClientInfo.currentMember, ClientInfo.currentRoom);
+		Message request = new Message(requestProtocol, new Member(ClientInfo.currentMember), ClientInfo.currentRoom);
 		request.setMsg(msg);
 		try {
 			oos.writeObject(request);

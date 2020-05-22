@@ -1,18 +1,12 @@
 package yeong.chatting.client.base.action;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
 import java.util.Map;
 
-import javafx.application.Platform;
 import javafx.scene.control.Control;
-import javafx.scene.control.TextInputControl;
 import javafx.stage.Stage;
 import yeong.chatting.client.util.CommandMap;
 import yeong.chatting.model.Member;
-import yeong.chatting.util.CommonPathAddress;
 
 public class ActionInfo {
 	

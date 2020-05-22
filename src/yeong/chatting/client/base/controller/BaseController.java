@@ -13,9 +13,9 @@ import javafx.scene.control.Control;
 import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.action.CommonAction;
-import yeong.chatting.client.util.ClientThread;
+import yeong.chatting.client.thread.ClientThread;
+import yeong.chatting.client.thread.ThreadUtil;
 import yeong.chatting.client.util.CommandMap;
-import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.model.Member;
 import yeong.chatting.util.Log;
 

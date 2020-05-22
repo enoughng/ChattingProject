@@ -47,13 +47,4 @@ public class FormAction implements CommonAction {
 		}
 	}
 	
-	 
-//	public static void addForm(URL url) throws IOException {
-//		FXMLLoader loader = new FXMLLoader(url);
-//		Parent root = (Parent)loader.load();
-//		Scene scene = new Scene(root);
-//		Stage stage = new Stage();
-//		stage.setScene(scene);
-//		stage.show();
-//	}
  }

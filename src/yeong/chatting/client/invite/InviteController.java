@@ -31,7 +31,6 @@ public class InviteController extends BaseController {
 		super.initialize(location, resources);
 		initWaitingList();
 		con = this;
-		Log.i(getClass(), "initial È£Ãâ" + con);
 		
 	}
 	
@@ -56,6 +55,11 @@ public class InviteController extends BaseController {
 	private void initWaitingList() {
 		memberList = FXCollections.observableArrayList();
 		waitingList.setItems(memberList);
+		waitingList.setOnMouseClicked(event -> {
+			if(event.getClickCount()>1) {
+				invite.fire();
+			}
+		});
 	}
 	
 	public void setListView(ObservableList<Member> memberList) {

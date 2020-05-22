@@ -24,6 +24,8 @@ public enum ProtocolType {
 	REQUEST_PROFILE,
 	REQUEST_PROFILE_EDIT,
 	
+	REQUEST_DELETE_ACCOUNT,
+	
 	/** Server Response*/
 	RESPONSE_LOGOUT,
 	RESPONSE_IDCHECK,
@@ -55,6 +57,8 @@ public enum ProtocolType {
 	
 	RESPONSE_PROFILE,
 	RESPONSE_PROFILE_EDIT,
+	
+	RESPONSE_DELETE_ACCOUNT,
 	
 	CLOSE
 }

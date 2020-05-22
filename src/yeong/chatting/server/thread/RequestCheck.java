@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Vector;
 
 import javafx.application.Platform;
@@ -106,8 +107,11 @@ public class RequestCheck {
 		case REQUEST_PROFILE_EDIT:
 			response=profileEdit();
 			break;
+		case REQUEST_DELETE_ACCOUNT:
+			response=deleteAccount();
+			break;
 		default:
-			response = request;
+			response = null;
 			
 		}
 
@@ -228,6 +232,7 @@ public class RequestCheck {
 	 * @throws SQLException
 	 */
 	private Message createRoom() throws SQLException { 
+
 		RoomInfo result = sDao.insertRoom(request.getrInfo(), request.getFrom());
 		if(result != null) {	
 			response = new Message(ProtocolType.RESPONSE_CREATEROOM, request.getFrom());
@@ -240,7 +245,7 @@ public class RequestCheck {
 			newList.add(request.getFrom());
 			ServerThread.roomMemberList.put(result.getRoom_num(), newList);
 			response.setRoomMemberList(newList);
-			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+result.getRoom_num()+"번) "+result.getRoom_title()+" 방을 만드셨습니다.");
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ["+result.getRoom_num()+"번] "+result.getRoom_title()+" 방을 만드셨습니다.");
 		} else {
 			response = new Message(ProtocolType.RESPONSE_CREATEROOM_FAIL, request.getFrom());
 		}
@@ -309,13 +314,13 @@ public class RequestCheck {
 			isBroadType = false;
 			responseProtocol = ProtocolType.RESPONSE_EXITROOM_HOST;
 			sDao.deleteRoom(DBrInfo);
-			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+DBrInfo.getRoom_num()+"번) "+DBrInfo.getRoom_title()+" 방을 파괴하셨습니다.");
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ["+DBrInfo.getRoom_num()+"번] "+DBrInfo.getRoom_title()+" 방을 파괴하셨습니다.");
 
 		} else { // 나가는사람이 방장이 아니면 방 나가기
 			isBroadType = false;
 			responseProtocol = ProtocolType.RESPONSE_EXITROOM;
 			ServerThread.roomMemberList.get(DBrInfo.getRoom_num()).remove(request.getFrom());
-			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+DBrInfo.getRoom_num()+"번) "+DBrInfo.getRoom_title()+" 방에서 나가셨습니다.");
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ["+DBrInfo.getRoom_num()+"번] "+DBrInfo.getRoom_title()+" 방에서 나가셨습니다.");
 
 		}
 		
@@ -338,7 +343,7 @@ public class RequestCheck {
 		// 프로토콜과 방정보만 바꿔준다.
 		request.setProtocol(responseProtocol);
 		request.setrInfo(dbRoomInfo);
-//		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + "님이 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방에서 채팅하셨습니다.");
+//		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방에서 채팅하셨습니다.");
 		return request;
 		
 	}
@@ -367,6 +372,8 @@ public class RequestCheck {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_INVITE_REQUEST;
 		Message response = new Message(request);
 		response.setProtocol(responseProtocol);
+		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 "+ request.getTo().getId() + "(" + request.getTo().getName() +   ")님에게 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방으로 초대하셨습니다.");
+
 		return response;
 	}
 	
@@ -416,11 +423,81 @@ public class RequestCheck {
 	private Message profileEdit() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_PROFILE_EDIT;
 		boolean result = sDao.updateProfile(request.getFrom(), request.getProfile());
-		
 		Message response = new Message(responseProtocol, request.getFrom());
+		
+		Log.i("RequestProfile : " + request.getProfile().getNickname()+"***");
+
+		
+		if(result && request.getrInfo()!=null) {
+			Map<Integer, Vector<Member>> serverMemberList = ServerThread.roomMemberList;
+			Vector<Member> roomMemberList = serverMemberList.get(request.getrInfo().getRoom_num());
+			Vector<Member> newMemberList = new Vector<>();
+			
+			Log.i(getClass(), "ROOMINFO Previous MemberList : " + roomMemberList);
+
+			for(int i=0;i<roomMemberList.size();i++) {
+				if(roomMemberList.get(i).getId().equals(request.getProfile().getId())) {
+					Log.i("ROOMINFO Before : " + roomMemberList.get(i).getName());
+					Member previousMember = roomMemberList.get(i);
+					Member newMember = new Member(previousMember);
+					newMember.setName(request.getProfile().getNickname());
+					Log.i("ROOMINFO RequestProfile : " + request.getProfile().getNickname());
+					Log.i("ROOMINFO After : " + newMember.getName());
+					newMemberList.add(newMember);
+					continue;
+				}
+				newMemberList.add(roomMemberList.get(i));
+			}
+			Log.i(getClass(), "ROOMINFO new MemberList : " + newMemberList);
+			response.setrInfo(request.getrInfo());
+			ServerThread.roomMemberList.put(request.getrInfo().getRoom_num(), new Vector<Member>(newMemberList));
+			response.setRoomMemberList(new Vector<Member>(newMemberList));
+			
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 "+ request.getrInfo()+" 방에서 프로필을 변경하셨습니다");
+
+		} else if(result) {
+			Vector<Member> newMemberList = new Vector<>();
+			Vector<Member> previousMemberList = ServerThread.memberList;
+			Log.i(getClass(), "WAITING Previous MemberList : " + ServerThread.memberList);
+
+			for(int i=0;i<previousMemberList.size();i++) {
+				if(previousMemberList.get(i).getId().equals(request.getProfile().getId())) {
+					Log.i("WAITING Before : " + previousMemberList.get(i).getName());
+					Member previousMember = previousMemberList.get(i);
+					Member newMember = new Member(previousMember);
+					newMember.setName(request.getProfile().getNickname());
+					Log.i("WAITING RequestProfile : " + request.getProfile().getNickname());
+					Log.i("WAITING After : " + newMember.getName());
+					newMemberList.add(newMember);
+					continue;
+				}
+				newMemberList.add(previousMemberList.get(i));
+			}
+			Log.i(getClass(), "WAITING new MemberList : " + newMemberList);
+			ServerThread.memberList = new Vector<Member>(newMemberList);
+			response.setMemberList(newMemberList);			
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 대기실에서 프로필을 변경하셨습니다");
+		}
+		
 		response.setMsg(Boolean.toString(result));
+		response.setProfile(request.getProfile());
+		
+		Log.i(getClass(), "MemberList : " + ServerThread.memberList);
+		Log.i(getClass(), "roomMemberList : " + ServerThread.roomMemberList);
+		
 		
 		return response;
 	}
 	
+	private Message deleteAccount() throws SQLException {
+		Log.i(getClass(),"!"+"DB실행직전");
+		boolean result = sDao.deleteAccount(request.getFrom());
+		Log.i(getClass(),"!"+"실행후");
+		Message response = new Message(ProtocolType.RESPONSE_DELETE_ACCOUNT, request.getFrom());
+		if(result) {
+			response.setMsg("true");
+			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 계정을 삭제하셨습니다.");
+		}
+		return response;
+	}
 }

@@ -250,11 +250,10 @@ public class ServerDAO extends CommonDao{
 			selectResult = new ChattingProfile(name, id, introduce);
 		}
 		
-		Log.i(getClass(), "SelectResult : " + selectResult );
 		if(selectResult == null) {
 			insertProfile(to);
 			selectResult = selectProfile(to);
-			Log.i(getClass(), "Result : " + selectResult );
+			Log.i(getClass(),"½ÇÇàµÊ");
 		}
 		
 		return selectResult;
@@ -268,10 +267,27 @@ public class ServerDAO extends CommonDao{
 	
 	public boolean updateProfile(Member from, ChattingProfile p) throws SQLException {
 		PreparedStatement pstmt = openConnection("UpdateProfile");
-		pstmt.setString(1, p.getNickname());
-		pstmt.setString(2, p.getIntroduce());
-		pstmt.setString(3, from.getId());
+		pstmt.setString(1, p.getIntroduce());
+		pstmt.setString(2, from.getId());
+		
 		int index = pstmt.executeUpdate();
-		return index == 1;
+		
+		pstmt = openConnection("UpdateMemberID");
+		pstmt.setString(1, p.getNickname());
+		pstmt.setString(2, from.getId());
+		int index2 = pstmt.executeUpdate();
+		
+
+		return (index+index2) == 2;
 	}
+	
+	public boolean deleteAccount(Member from) throws SQLException {
+		
+		PreparedStatement pstmt = openConnection("DeleteAccount");
+		pstmt.setString(1, from.getId());
+		int i = pstmt.executeUpdate();
+		
+		return i==1;
+	}
+	
 }

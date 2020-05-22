@@ -33,7 +33,7 @@ public class SecretSendAction implements CommonAction {
 		if(msg.equals("")) return;
 		RoomInfo rinfo = ClientInfo.currentRoom;
 		
-		Message request = new Message(requestProtocol, ClientInfo.currentMember, to, msg);
+		Message request = new Message(requestProtocol, new Member(ClientInfo.currentMember), to, msg);
 		request.setrInfo(rinfo);
 		try {
 			oos.writeObject(request);

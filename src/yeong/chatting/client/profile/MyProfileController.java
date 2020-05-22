@@ -50,7 +50,7 @@ public class MyProfileController extends BaseController{
 	
 	@FXML
 	private void withdraw() {
-		ActionInfo withdrawAction = new ActionInfo("EditProfile", editBtn);
+		ActionInfo withdrawAction = new ActionInfo("Withdraw", editBtn);
 		action(withdrawAction);
 	}
 	

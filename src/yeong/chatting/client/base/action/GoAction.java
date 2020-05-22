@@ -25,13 +25,10 @@ public class GoAction implements CommonAction {
 			Parent regiForm = (Parent)loader.load();
 			Scene scene = new Scene(regiForm);
 			
-			
 			Stage primaryStage = (Stage)info.getPrimaryStage();
 			if(info.getURL().toString().indexOf(CommonPathAddress.LoginLayout) != -1) {
 				primaryStage.setTitle("로그인 화면");				
 			} else if(info.getURL().toString().indexOf("CreateRoomLayout.fxml") != -1) {
-//				CreateRoomController con = loader.getController();
-//				con.setStage(info.getPrimaryStage());
 				info.getPrimaryStage().setTitle("채팅방 만들기");
 			}
 			primaryStage.setScene(scene);
@@ -58,8 +55,6 @@ public class GoAction implements CommonAction {
 					
 				}
 			} else if(url.toString().indexOf("CreateRoomLayout.fxml") != -1) {
-//				CreateRoomController con = loader.getController();
-//				con.setStage(stage);
 				stage.setTitle("채팅방 만들기");
 			} else if(url.toString().indexOf(CommonPathAddress.ChattingRoomLayout) != -1) {
 				stage.setTitle(ClientInfo.currentRoom.getRoom_num()+ " 번 채팅방" + " : " + ClientInfo.currentMember.getName() + "님");

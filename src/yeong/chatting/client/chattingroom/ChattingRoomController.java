@@ -89,9 +89,7 @@ public class ChattingRoomController extends BaseController{
 	 * @param list
 	 */
 	public void setListView(ObservableList<Member> list) {
-		Log.i(getClass(), this.list + "before");
 		this.list.setAll(list);
-		Log.i(getClass(), this.list + "after");
 	}
 
 	/**

@@ -18,7 +18,7 @@ public class EnterRoomAction implements CommonAction {
 	public void action(ActionInfo info) {
 
 		ProtocolType requestProtocol = ProtocolType.REQUEST_ENTERROOM;
-		Member currentMember = ClientInfo.currentMember;
+		Member currentMember = new Member(ClientInfo.currentMember);
 		
 		RoomInfo selectedRoom = (RoomInfo)info.getUserDatas()[0];
 		

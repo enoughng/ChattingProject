@@ -1,4 +1,4 @@
-package yeong.chatting.client.util;
+package yeong.chatting.client.thread;
 
 import java.io.IOException;
 import java.io.InputStream;

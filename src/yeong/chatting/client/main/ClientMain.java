@@ -5,9 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import yeong.chatting.client.thread.ClientThread;
+import yeong.chatting.client.thread.ThreadUtil;
 import yeong.chatting.client.util.ClientInfo;
-import yeong.chatting.client.util.ClientThread;
-import yeong.chatting.client.util.ThreadUtil;
 import yeong.chatting.model.Message;
 import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
@@ -20,7 +20,7 @@ public class ClientMain extends Application{
 	public void init() throws Exception {
 		super.init();
 		try { 
-			Class.forName("yeong.chatting.client.util.ThreadUtil");
+			Class.forName("yeong.chatting.client.thread.ThreadUtil");
 		} catch(ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -33,7 +33,6 @@ public class ClientMain extends Application{
 		Parent root = (Parent)loader.load();
 		Scene scene = new Scene(root);
 		primaryStage.setResizable(false);
-
 
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("로그인 화면");

@@ -16,6 +16,7 @@ import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.action.CommonAction;
 import yeong.chatting.client.base.action.GoAction;
 import yeong.chatting.client.util.ClientInfo;
+import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
 import yeong.chatting.model.RoomInfo;
 import yeong.chatting.util.CommonPathAddress;
@@ -27,6 +28,8 @@ public class CreateRoomAction implements CommonAction {
 	public void action(ActionInfo info) {
 		
 		Message request;
+		
+		Log.i(getClass(), "*" + ClientInfo.currentMember);
 		
 		TextField id = (TextField)info.getCons()[0];
 		PasswordField pw = (PasswordField)info.getCons()[1];
@@ -49,7 +52,7 @@ public class CreateRoomAction implements CommonAction {
 		RoomInfo rInfo= new RoomInfo(strId,strPw,ClientInfo.currentMember.getId());
 		rInfo.setChk(bChk);
 		
-		request = new Message(ProtocolType.REQUEST_CREATEROOM, ClientInfo.currentMember);
+		request = new Message(ProtocolType.REQUEST_CREATEROOM, new Member(ClientInfo.currentMember));
 		request.setrInfo(rInfo);
 		
 		try {

@@ -15,14 +15,14 @@ public class PopupProfileAction implements CommonAction{
 	public void action(ActionInfo info) {
 		String input = (String)info.getUserDatas()[0];
 		Member to;
-		Log.i(getClass(), input);
+		
 		if(input.equals("My")) {
-			to = ClientInfo.currentMember;
+			to = new Member(ClientInfo.currentMember);
 		} else {
 			to = (Member)info.getUserDatas()[1];
 		}
 		ProtocolType requestProtocol = ProtocolType.REQUEST_PROFILE;
-		Message request = new Message(requestProtocol, ClientInfo.currentMember);
+		Message request = new Message(requestProtocol, new Member(ClientInfo.currentMember));
 		request.setTo(to);
 		
 		try { oos.writeObject(request); } catch (IOException e) { e.printStackTrace(); }

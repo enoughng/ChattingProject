@@ -56,7 +56,8 @@ public class EditProfileAction implements CommonAction {
 			
 			Message request = new Message(ProtocolType.REQUEST_PROFILE_EDIT);
 			request.setFrom(ClientInfo.currentMember);
-			request.setProfile(new ChattingProfile(strId, strName, strIntroduce));
+			request.setProfile(new ChattingProfile(strName, strId, strIntroduce));
+			if(ClientInfo.currentRoom != null) request.setrInfo(ClientInfo.currentRoom);
 			try { oos.writeObject(request); } catch (IOException e) { e.printStackTrace(); }
 		}
 		

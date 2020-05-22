@@ -15,7 +15,7 @@ public class CancelAction implements CommonAction{
 	public void action(ActionInfo info) {
 		
 		ProtocolType requestProtocol = ProtocolType.REQUEST_WAITINGROOM_MEMBER;
-		Member from = ClientInfo.currentMember;
+		Member from = new Member(ClientInfo.currentMember);
 		
 		Message request = new Message(requestProtocol, from);
 		

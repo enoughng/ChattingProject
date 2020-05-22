@@ -20,7 +20,7 @@ public class InviteAction implements CommonAction{
 		ProtocolType requestProtocol = ProtocolType.REQUEST_INVITE;
 		Member selectedMember = (Member)info.getUserDatas()[0];
 		
-		Message request = new Message(requestProtocol, ClientInfo.currentMember);
+		Message request = new Message(requestProtocol, new Member(ClientInfo.currentMember));
 		request.setTo(selectedMember);
 		request.setrInfo(ClientInfo.currentRoom);
 		
