@@ -89,7 +89,9 @@ public class ChattingRoomController extends BaseController{
 	 * @param list
 	 */
 	public void setListView(ObservableList<Member> list) {
+		Log.i(getClass(), this.list + "before");
 		this.list.setAll(list);
+		Log.i(getClass(), this.list + "after");
 	}
 
 	/**
@@ -165,20 +167,37 @@ public class ChattingRoomController extends BaseController{
 	private void initMemberList() {
 		list = FXCollections.observableArrayList();
 		memberList.setItems(list);
+		
+		memberList.setOnMouseClicked(event -> {
+			if(event.getClickCount() > 1) {
+				 
+				 ActionInfo action = new ActionInfo("PopupProfile",memberList,CommonPathAddress.MyProfileLayout);
+				 if(memberList.getSelectionModel().getSelectedItem().equals(ClientInfo.currentMember)) {
+					action.setUserDatas("My", memberList.getSelectionModel().getSelectedItem());
+				} else {
+					action.setUserDatas("", memberList.getSelectionModel().getSelectedItem());					
+				}
+				action(action);
+			}
+		});
 		memberList.setCellFactory(new Callback<ListView<Member>, ListCell<Member>>() {
 			@Override
 			public ListCell<Member> call(ListView<Member> param) {
 				ListCell<Member> cell = new ListCell<Member>() {
 					@Override
 					protected void updateItem(Member item, boolean empty) {
+						super.updateItem(item, empty);
 						if(item != null && !empty) {
 							StringBuilder sb = new StringBuilder();
 							sb.append(item.toString() + " (방장)");
 							if(item.getId().equals(ClientInfo.currentRoom.getRoom_host())) {
 								setText(sb.toString());
-								return;
-							}
-							setText(item.toString());
+							} else {
+								Log.i(getClass(), "업데이트 됨");
+								setText(item.toString());
+							} 
+						} else {
+							setText("");
 						}
 					}
 				};

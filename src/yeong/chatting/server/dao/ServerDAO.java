@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Vector;
 
+import yeong.chatting.model.ChattingProfile;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
 import yeong.chatting.model.RoomInfo;
+import yeong.chatting.model.SearchValue;
 import yeong.chatting.server.thread.ServerThread;
 import yeong.chatting.util.Log;
 
@@ -201,5 +203,75 @@ public class ServerDAO extends CommonDao{
 	//		
 	//		return map;
 	//	}
-
+	
+	public SearchValue selectSearchID(SearchValue sv) throws SQLException {
+		PreparedStatement pstmt = openConnection("SearchID");
+		pstmt.setString(1, sv.getName());
+		pstmt.setString(2, sv.getEmail());
+		
+		SearchValue newValue = new SearchValue(sv);
+		
+		ResultSet rs = pstmt.executeQuery();
+		
+		while(rs.next()) {
+			newValue.setId(rs.getString("id"));
+		}
+		Log.i(getClass(),newValue.getId()+"*");	
+		
+		return newValue;
+	}
+	
+	public SearchValue selectSearchPW(SearchValue sv) throws SQLException {
+		PreparedStatement pstmt = openConnection("SearchPW");
+		pstmt.setString(1, sv.getName());
+		pstmt.setString(2, sv.getEmail());
+		pstmt.setString(3,  sv.getId());
+		
+		SearchValue newValue = new SearchValue(sv);
+		
+		ResultSet rs = pstmt.executeQuery();
+		
+		while(rs.next()) {
+			newValue.setPassword(rs.getString("password"));
+		}
+		
+		return newValue;
+	}
+	
+	public ChattingProfile selectProfile(Member to) throws SQLException {
+		ChattingProfile selectResult = null;
+		PreparedStatement pstmt = openConnection("SelectProfile");
+		pstmt.setString(1, to.getId());
+		ResultSet rs = pstmt.executeQuery();
+		if(rs.next()) {
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			String introduce = rs.getString("introduce");
+			selectResult = new ChattingProfile(name, id, introduce);
+		}
+		
+		Log.i(getClass(), "SelectResult : " + selectResult );
+		if(selectResult == null) {
+			insertProfile(to);
+			selectResult = selectProfile(to);
+			Log.i(getClass(), "Result : " + selectResult );
+		}
+		
+		return selectResult;
+	}
+	
+	public void insertProfile(Member from) throws SQLException {
+		PreparedStatement pstmt = openConnection("InsertProfile");
+		pstmt.setString(1, from.getId());
+		pstmt.executeUpdate();
+	}
+	
+	public boolean updateProfile(Member from, ChattingProfile p) throws SQLException {
+		PreparedStatement pstmt = openConnection("UpdateProfile");
+		pstmt.setString(1, p.getNickname());
+		pstmt.setString(2, p.getIntroduce());
+		pstmt.setString(3, from.getId());
+		int index = pstmt.executeUpdate();
+		return index == 1;
+	}
 }

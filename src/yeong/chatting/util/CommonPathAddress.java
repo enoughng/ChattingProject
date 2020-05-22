@@ -8,8 +8,13 @@ public class CommonPathAddress {
 	public static final String WaitingRoomLayout = "/yeong/chatting/client/waitingroom/WaitingRoomLayout.fxml";
 	public static final String CreateRoomLayout = "/yeong/chatting/client/createroom/CreateRoomLayout.fxml";
 	public static final String ChattingRoomLayout = "/yeong/chatting/client/chattingroom/ChattingRoomLayout.fxml";
+	
 	public static final String InviteLayout = "/yeong/chatting/client/invite/InviteLayout.fxml";
-
+	public static final String SearchLayout = "/yeong/chatting/client/search/SearchLayout.fxml";
+	
+	public static final String ProfileLayout ="/yeong/chatting/client/profile/ProfileLayout.fxml";
+	public static final String MyProfileLayout ="/yeong/chatting/client/profile/MyProfileLayout.fxml";
+	
 	// 서버 레이아웃 경로
 	public static final String ServerMainLayout = "/yeong/chatting/server/main/MainLayout.fxml";
 	

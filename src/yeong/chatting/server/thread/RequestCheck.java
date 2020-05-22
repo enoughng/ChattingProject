@@ -11,9 +11,11 @@ import java.util.Date;
 import java.util.Vector;
 
 import javafx.application.Platform;
+import yeong.chatting.model.ChattingProfile;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.Message;
 import yeong.chatting.model.RoomInfo;
+import yeong.chatting.model.SearchValue;
 import yeong.chatting.server.dao.ServerDAO;
 import yeong.chatting.server.main.MainController;
 import yeong.chatting.util.Log;
@@ -91,6 +93,19 @@ public class RequestCheck {
 			break;
 		case RESPONSE_INVITE_REJECT:
 			response = reject();
+			break;
+		case REQUEST_SEARCH_ID:
+			response = searchID();
+		break;
+		case REQUEST_SEARCH_PW:
+			response = searchPW();
+			break;
+		case REQUEST_PROFILE:
+			response = profile();
+			break;
+		case REQUEST_PROFILE_EDIT:
+			response=profileEdit();
+			break;
 		default:
 			response = request;
 			
@@ -174,9 +189,9 @@ public class RequestCheck {
 		Message response;
 
 		sDao.insertMember(request.getFrom()); // 데이터베이스 insert문 삽입
+		sDao.insertProfile(request.getFrom());
 		responseProtocol = ProtocolType.RESPONSE_REGISTRY_SUCCESS;
 		response = new Message(responseProtocol, request.getFrom());
-		
 		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ") 님이 회원등록을 하셨습니다.");
 		return response;
 	}
@@ -309,7 +324,7 @@ public class RequestCheck {
 		response.setrInfo(new RoomInfo(DBrInfo)); 
 		Vector<RoomInfo> list = sDao.getRooms(); // 대기실 방정보 DB를 통해서 가져옴
 		response.setRoomList(list); // 방정보 
-//		response.setRoomMemberList(new Vector(list);
+		response.setRoomMemberList(new Vector<Member>(ServerThread.roomMemberList.get(DBrInfo.getRoom_num()))); // 들어가있는 방정보
 		return response;
 	}
 	
@@ -339,6 +354,8 @@ public class RequestCheck {
 	
 	private Message checkID() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_IDCHECK;
+		
+		Log.i(getClass(), request.getMsg());
 		String isHave = sDao.checkID(request.getMsg());
 
 		Message response = new Message(responseProtocol,isHave);
@@ -364,4 +381,46 @@ public class RequestCheck {
 		Message response = request;
 		return response;
 	}
+	
+	private Message searchID() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_SEARCH_ID;
+		
+		SearchValue dbSv = sDao.selectSearchID(request.getSv());
+		
+		Message response = new Message(responseProtocol);
+		response.setSv(dbSv);
+		return response;
+	}
+	
+	private Message searchPW() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_SEARCH_PW;
+		
+		SearchValue dbSv = sDao.selectSearchPW(request.getSv());
+		
+		Message response = new Message(responseProtocol);
+		response.setSv(dbSv);
+		return response; 
+	}
+	
+	private Message profile() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_PROFILE;
+		ChattingProfile dbResult = sDao.selectProfile(request.getTo());
+		Log.i(getClass(), dbResult.getId());
+		Message response = new Message(responseProtocol, request.getFrom());
+		response.setTo(request.getTo());
+		response.setProfile(dbResult);
+		
+		return response;
+	}
+	
+	private Message profileEdit() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_PROFILE_EDIT;
+		boolean result = sDao.updateProfile(request.getFrom(), request.getProfile());
+		
+		Message response = new Message(responseProtocol, request.getFrom());
+		response.setMsg(Boolean.toString(result));
+		
+		return response;
+	}
+	
 }

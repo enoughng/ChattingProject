@@ -27,11 +27,20 @@ public class Message implements Serializable{
 	private Member to;
 	private String msg;
 	private RoomInfo rInfo;
+	private SearchValue sv;
+	private ChattingProfile profile;
 	
 	private Vector<Member> roomMemberList; // 특정 방 접속멤버
 	private Vector<RoomInfo> roomList; // 대기실 방 정보
 	private Vector<Member> memberList; // 대기실 멤버
 	
+	
+	
+	
+	public Message(ProtocolType protocol) {
+		this.protocol = protocol;
+	}
+
 	public Message(Message msg) {
 		this.protocol = msg.protocol;
 		this.from = msg.from;
@@ -73,6 +82,22 @@ public class Message implements Serializable{
 	
 	
 	
+
+	public ChattingProfile getProfile() {
+		return profile;
+	}
+
+	public void setProfile(ChattingProfile profile) {
+		this.profile = profile;
+	}
+
+	public SearchValue getSv() {
+		return sv;
+	}
+
+	public void setSv(SearchValue sv) {
+		this.sv = sv;
+	}
 
 	public Vector<Member> getRoomMemberList() {
 		return roomMemberList;

@@ -3,6 +3,7 @@ package yeong.chatting.client.util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.Optional;
 
 import javafx.application.Platform;
@@ -17,10 +18,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import yeong.chatting.client.base.action.GoAction;
 import yeong.chatting.client.chattingroom.ChattingRoomController;
 import yeong.chatting.client.invite.InviteController;
+import yeong.chatting.client.profile.MyProfileController;
+import yeong.chatting.client.profile.ProfileController;
 import yeong.chatting.client.registry.RegistryController;
+import yeong.chatting.client.search.SearchController;
 import yeong.chatting.client.util.alert.AlertFactory;
 import yeong.chatting.client.util.alert.MyAlert;
 import yeong.chatting.client.waitingroom.WaitingRoomController;
@@ -156,8 +161,11 @@ public class ClientThread implements Runnable {
 				try { setWaitingRoom(message); } catch (IOException e) { e.printStackTrace(); }
 				return;
 			}
+			Log.i(getClass(), "!" + ClientInfo.currentMember);
 			if(ClientInfo.currentRoom.getRoom_num() == message.getrInfo().getRoom_num())  {
 				Platform.runLater( () -> {
+					Log.i(getClass(), "업데이트 채팅룸리스트");
+					Log.i(getClass(), "*" + message.getRoomMemberList());
 					updateChattingRoomList(message);				
 				});
 			}
@@ -301,8 +309,95 @@ public class ClientThread implements Runnable {
 				}
 			});
 			break;
+
+		case RESPONSE_SEARCH_ID:
+		case RESPONSE_SEARCH_PW:
+			search(message);
+			break;
+		case RESPONSE_PROFILE:
+			URL url; 
+			boolean isMy = message.getTo().equals(ClientInfo.currentMember);
+			if(isMy) {
+				url = ClientInfo.getResource(CommonPathAddress.MyProfileLayout);
+			} else {
+				url = ClientInfo.getResource(CommonPathAddress.ProfileLayout);				
+			}
+			FXMLLoader loader = new FXMLLoader(url);
+			
+				Platform.runLater( () -> {
+				Parent p=null;
+				if(isMy) {
+					
+					try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
+					MyProfileController con = loader.getController();
+										
+					con.setProfile(message.getProfile());
+					Scene scene = new Scene(p);
+					Stage stage = new Stage();
+					stage.setScene(scene);
+					stage.show();
+				} else {
+					try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
+					ProfileController con = loader.getController();
+					con.setProfile(message.getProfile());
+					Scene scene = new Scene(p);
+					Stage stage = new Stage();
+					stage.setScene(scene);
+					stage.show();
+				}
+			});
+			
+			break;
+		case RESPONSE_PROFILE_EDIT:
+			if(Boolean.parseBoolean(message.getMsg())) {
+				Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 성공하였습니다.");
+				alert.setHeaderText("알림");
+				alert.setTitle("성공");
+				alert.showAndWait();
+			} else {
+				Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 실패하였습니다.");
+				alert.setHeaderText("알림");
+				alert.setTitle("실패");
+				alert.showAndWait();
+			}
+			break;
 		default:
 		}
+	}
+
+	private void search(Message msg) {
+		String responseStr;
+		if(msg.getProtocol() == ProtocolType.RESPONSE_SEARCH_ID) {
+			responseStr = message.getSv().getId();
+
+		} else {
+			responseStr = message.getSv().getPassword();
+
+		}
+		Platform.runLater( () -> {
+			if(responseStr==null) {
+				Alert alert = new Alert(AlertType.INFORMATION, "찾는 아이디가 없습니다.");
+				alert.setTitle("ID 찾기");
+				alert.setHeaderText("없는 정보");
+				alert.showAndWait();
+
+			} else {
+				Alert alert;
+				if(message.getSv().getPassword()==null) {				
+					alert = new Alert(AlertType.INFORMATION, "ID = "+responseStr);
+					alert.setTitle("ID 찾기");
+					alert.setHeaderText("일치하는 아이디");	
+					
+				} else {
+					alert = new Alert(AlertType.INFORMATION, "PASSWORD = " + responseStr);
+					alert.setTitle("PASSWORD 찾기");
+					alert.setHeaderText("일치하는 비밀번호");	
+				}
+				alert.showAndWait();
+				SearchController sc = SearchController.getCon();
+				sc.getSearchControllerStage().close();
+			}
+		});
 	}
 
 	private void setWaitingRoom(Message message) throws IOException {

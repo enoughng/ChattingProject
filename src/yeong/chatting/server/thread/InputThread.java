@@ -86,6 +86,7 @@ public class InputThread implements Runnable {
 					updateWaitingRoom(request);
 					break;
 				case RESPONSE_EXITROOM:
+					Log.i(getClass(), "나가기 발생");
 					updateChattingRoom(request);
 					updateWaitingRoom(request);
 					break;
@@ -105,6 +106,7 @@ public class InputThread implements Runnable {
 				break;
 				case RESPONSE_INVITE_REJECT:
 					rejectSend(response);
+					break;
 				default:
 				}
 

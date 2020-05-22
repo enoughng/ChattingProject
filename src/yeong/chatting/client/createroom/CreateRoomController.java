@@ -3,18 +3,12 @@ package yeong.chatting.client.createroom;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javax.jws.soap.InitParam;
-
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import oracle.jdbc.proxy.annotation.SetDelegate;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.util.ClientInfo;

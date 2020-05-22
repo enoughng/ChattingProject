@@ -33,7 +33,9 @@ public class FormAction implements CommonAction {
 			stage.setScene(scene);
 			if(action.getAbsoluteDestination().indexOf(getClass().getResource(CommonPathAddress.RegistryLayout).toString())!=-1) {
 				stage.initOwner(action.getPrimaryStage());
-				stage.setTitle("회원가입 창");
+				stage.setTitle("회원가입");
+			} else if(action.getAbsoluteDestination().indexOf("SearchLayout.fxml")!=-1) {
+				stage.setTitle("아이디/비밀번호 찾기");
 			}
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.setResizable(false);

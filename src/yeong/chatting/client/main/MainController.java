@@ -46,6 +46,8 @@ public class MainController extends BaseController {
 	Button exitBtn;
 	@FXML
 	Button registryBtn;
+	@FXML
+	Button search;
 	
 	
 	@FXML
@@ -63,6 +65,11 @@ public class MainController extends BaseController {
 	@FXML
 	public void registry() {
 		action(new ActionInfo("Form",registryBtn,CommonPathAddress.RegistryLayout));
+	}
+	
+	@FXML
+	public void searchUser() {
+		action(new ActionInfo("Form",search,CommonPathAddress.SearchLayout));
 	}
 	
 	
