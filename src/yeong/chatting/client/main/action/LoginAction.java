@@ -41,7 +41,7 @@ public class LoginAction implements CommonAction {
 		
 		String inputPw = pwPf.getText();
 		
-		Message m = new Message(ProtocolType.REQUEST_LOGIN, new Member(inputId, inputPw));
+		Message m = new Message(ProtocolType.REQUEST_LOGIN, new Member(inputId.toLowerCase(), inputPw));
 		
 		try {
 			oos.writeObject(m);

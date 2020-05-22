@@ -17,7 +17,7 @@ public class IDCheckAction implements CommonAction {
 		TextField id = (TextField)info.getCons()[0];
 		String strId = id.getText();
 		ProtocolType requestProtocol = ProtocolType.REQUEST_IDCHECK;
-		String msg = strId;
+		String msg = strId.toLowerCase();
 		
 		Message request = new Message(requestProtocol, msg);
 		
