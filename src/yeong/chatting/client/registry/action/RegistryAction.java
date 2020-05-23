@@ -58,7 +58,7 @@ public class RegistryAction implements CommonAction {
 			return;
 		}
 
-		Member member = new Member(strID, strPW, strNick, strEmail);
+		Member member = new Member(strID.toLowerCase(), strPW, strNick, strEmail);
 
 		Message msg = new Message(ProtocolType.REQUEST_REGISTRY, member);
 

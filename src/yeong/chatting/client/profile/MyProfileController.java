@@ -31,9 +31,7 @@ public class MyProfileController extends BaseController{
 	private StringProperty strName = new SimpleStringProperty();
 	private StringProperty strId = new SimpleStringProperty();
 	
-	
-	
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
@@ -82,6 +80,7 @@ public class MyProfileController extends BaseController{
 	
 	private void initLabelSetting() {
 		id.setEditable(false);
+		id.setDisable(true);
 		nickname.setEditable(false);
 		introduce.setEditable(false);
 		nickname.textProperty().bind(strName);

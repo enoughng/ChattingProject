@@ -22,6 +22,7 @@ import yeong.chatting.client.util.Place;
 import yeong.chatting.model.Member;
 import yeong.chatting.model.RoomInfo;
 import yeong.chatting.util.CommonPathAddress;
+import yeong.chatting.util.Log;
 
 /**
  * @FileName  : WaitingRoomController.java
@@ -119,8 +120,12 @@ public class WaitingRoomController extends BaseController {
 		members = FXCollections.observableArrayList();
 		memberList.setItems(members);
 		memberList.setOnMouseClicked(event -> {
-			if(event.getClickCount() > 1) {
-				 
+			String eventTarget = event.getTarget().toString();
+			if(eventTarget.substring(eventTarget.length()-6, eventTarget.length()).contains("'null'")) {
+				 memberList.getSelectionModel().clearSelection();
+				 return;
+			}
+			if(event.getClickCount() == 2) {
 				 ActionInfo action = new ActionInfo("PopupProfile",memberList,CommonPathAddress.MyProfileLayout);
 				 if(memberList.getSelectionModel().getSelectedItem().equals(ClientInfo.currentMember)) {
 					action.setUserDatas("My", memberList.getSelectionModel().getSelectedItem());

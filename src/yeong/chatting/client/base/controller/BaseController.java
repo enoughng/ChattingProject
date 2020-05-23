@@ -16,6 +16,7 @@ import yeong.chatting.client.base.action.CommonAction;
 import yeong.chatting.client.thread.ClientThread;
 import yeong.chatting.client.thread.ThreadUtil;
 import yeong.chatting.client.util.CommandMap;
+import yeong.chatting.client.util.MyEvent;
 import yeong.chatting.model.Member;
 import yeong.chatting.util.Log;
 
@@ -34,18 +35,22 @@ public class BaseController  implements Initializable{
 	protected Map<String,CommonAction> commandMap;
 	protected Stage stage;
 	private CommonAction action;
+	
+	protected MyEvent event;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		initCommand();
+		event = new MyEvent();
+		initEvent();
 	}
 
-	protected void action(ActionInfo info) {
+	protected final void action(ActionInfo info) {
 		if(info == null) return;
 		action = commandMap.get(info.getCommand());
 		action.action(info);
 	}
-	protected void initCommand() {
+	protected final void initCommand() {
 		commandMap = CommandMap.getCommandMap();
 	}
 
@@ -58,6 +63,8 @@ public class BaseController  implements Initializable{
 	protected void setStage(Stage stage) {
 		this.stage = stage;
 	}
+	
+	protected void initEvent() {}
 
 }
 

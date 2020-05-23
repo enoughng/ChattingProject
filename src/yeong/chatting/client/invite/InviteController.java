@@ -56,7 +56,12 @@ public class InviteController extends BaseController {
 		memberList = FXCollections.observableArrayList();
 		waitingList.setItems(memberList);
 		waitingList.setOnMouseClicked(event -> {
-			if(event.getClickCount()>1) {
+			String eventTarget = event.getTarget().toString();
+			if(eventTarget.substring(eventTarget.length()-6, eventTarget.length()).contains("'null'")) {
+				 waitingList.getSelectionModel().clearSelection();
+				 return;
+			}
+			if(event.getClickCount()==2) {
 				invite.fire();
 			}
 		});

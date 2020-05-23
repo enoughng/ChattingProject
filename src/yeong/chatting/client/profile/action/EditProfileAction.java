@@ -41,7 +41,11 @@ public class EditProfileAction implements CommonAction {
 		if(edit.getText().equals("프로필 수정")) {
 			name.textProperty().unbind();
 			name.setEditable(true);
-			introduce.setEditable(true);			
+			introduce.setEditable(true);	
+			name.requestFocus();
+			name.setOnAction(event -> {
+				introduce.requestFocus();
+			});
 			edit.setText("프로필 수정 완료");
 		} else if (edit.getText().equals("프로필 수정 완료")){
 			

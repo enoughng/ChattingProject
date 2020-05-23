@@ -54,12 +54,7 @@ public class RegistryController extends BaseController{
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		rCon = this;
-		initNotHangleEvent();
-		passwordCheck.setOnKeyPressed(e->{
-			initPasswordField();
-		});
-		
-		
+		initNotHangleEvent();		
 	}
 
 	@FXML
@@ -155,4 +150,18 @@ public class RegistryController extends BaseController{
 		t.setDaemon(true);
 		t.start();
 	}
+	
+	protected void initEvent() {
+		passwordCheck.setOnKeyPressed(e->{
+			initPasswordField();
+		});
+		
+		event.fireEvent(id, idchkBtn);
+		event.nextTextField(email1, email2);
+		event.nextTextField(email2, nickname);
+		event.nextTextField(nickname, password);
+		event.nextTextField(password, passwordCheck);
+		event.fireEvent(passwordCheck, registryBtn);
+	}
+	
 }

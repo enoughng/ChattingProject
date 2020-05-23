@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import javax.jws.soap.InitParam;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -72,6 +74,10 @@ public class MainController extends BaseController {
 		action(new ActionInfo("Form",search,CommonPathAddress.SearchLayout));
 	}
 	
-	
+	@Override
+	protected void initEvent() {
+		event.nextTextField(idTf, pwPf);
+		event.fireEvent(pwPf, loginBtn);
+	}
 
 }

@@ -51,6 +51,15 @@ public class SearchController extends BaseController{
 	public Stage getSearchControllerStage() {
 		Stage s = (Stage)idSearch.getScene().getWindow();
 		return s;
-		
 	}
+	
+	@Override
+	protected void initEvent() {
+		event.nextTextField(idNickname, idEmail);
+		event.fireEvent(idEmail, idSearch);
+		event.nextTextField(pwNickname, pwEmail);
+		event.nextTextField(pwEmail, pwID);
+		event.fireEvent(pwID, pwSearch);
+	}
+	
 }
