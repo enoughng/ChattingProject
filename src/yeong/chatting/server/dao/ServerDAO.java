@@ -203,41 +203,40 @@ public class ServerDAO extends CommonDao{
 	//		
 	//		return map;
 	//	}
-	
+
 	public SearchValue selectSearchID(SearchValue sv) throws SQLException {
 		PreparedStatement pstmt = openConnection("SearchID");
 		pstmt.setString(1, sv.getName());
 		pstmt.setString(2, sv.getEmail());
-		
+
 		SearchValue newValue = new SearchValue(sv);
-		
+
 		ResultSet rs = pstmt.executeQuery();
-		
+
 		while(rs.next()) {
 			newValue.setId(rs.getString("id"));
 		}
-		Log.i(getClass(),newValue.getId()+"*");	
-		
+
 		return newValue;
 	}
-	
+
 	public SearchValue selectSearchPW(SearchValue sv) throws SQLException {
 		PreparedStatement pstmt = openConnection("SearchPW");
 		pstmt.setString(1, sv.getName());
 		pstmt.setString(2, sv.getEmail());
 		pstmt.setString(3,  sv.getId());
-		
+
 		SearchValue newValue = new SearchValue(sv);
-		
+
 		ResultSet rs = pstmt.executeQuery();
-		
+
 		while(rs.next()) {
 			newValue.setPassword(rs.getString("password"));
 		}
-		
+
 		return newValue;
 	}
-	
+
 	public ChattingProfile selectProfile(Member to) throws SQLException {
 		ChattingProfile selectResult = null;
 		PreparedStatement pstmt = openConnection("SelectProfile");
@@ -249,45 +248,117 @@ public class ServerDAO extends CommonDao{
 			String introduce = rs.getString("introduce");
 			selectResult = new ChattingProfile(name, id, introduce);
 		}
-		
+
 		if(selectResult == null) {
 			insertProfile(to);
 			selectResult = selectProfile(to);
 			Log.i(getClass(),"실행됨");
 		}
-		
+
 		return selectResult;
 	}
-	
+
 	public void insertProfile(Member from) throws SQLException {
 		PreparedStatement pstmt = openConnection("InsertProfile");
 		pstmt.setString(1, from.getId());
 		pstmt.executeUpdate();
 	}
-	
+
 	public boolean updateProfile(Member from, ChattingProfile p) throws SQLException {
 		PreparedStatement pstmt = openConnection("UpdateProfile");
 		pstmt.setString(1, p.getIntroduce());
 		pstmt.setString(2, from.getId());
-		
+
 		int index = pstmt.executeUpdate();
-		
+
 		pstmt = openConnection("UpdateMemberID");
 		pstmt.setString(1, p.getNickname());
 		pstmt.setString(2, from.getId());
 		int index2 = pstmt.executeUpdate();
-		
+
 
 		return (index+index2) == 2;
 	}
-	
+
 	public boolean deleteAccount(Member from) throws SQLException {
-		
+
 		PreparedStatement pstmt = openConnection("DeleteAccount");
 		pstmt.setString(1, from.getId());
 		int i = pstmt.executeUpdate();
-		
+
 		return i==1;
+	}
+
+	/**
+	 * ID값으로 member 찾기
+	 * @param id
+	 * @return
+	 * @throws SQLException
+	 */
+	public Member selectMember(String id) throws SQLException {
+		
+		PreparedStatement pstmt = openConnection("SelectMember");
+		pstmt.setString(1, id);
+		ResultSet rs = pstmt.executeQuery();
+		Member result = null;
+		while(rs.next()) {
+			result = new Member(rs);
+		}
+
+		return result;
+	}
+
+	public boolean addFriend(Member from, Member to) throws SQLException {
+		
+		PreparedStatement pstmt = openConnection("SelectFriend");
+		pstmt = openConnection("InsertFriend");
+		pstmt.setString(1, to.getId());
+		pstmt.setString(2, from.getId());
+		pstmt.setString(3, from.getId());
+		pstmt.setString(4, to.getId());
+		
+		return (pstmt.executeUpdate() == 2);
+	}
+
+	public boolean friendCheck(Member from, Member to) throws SQLException {
+		
+		PreparedStatement pstmt = openConnection("SelectFriend");
+		pstmt.setString(1, to.getId());
+		pstmt.setString(2, from.getId());
+		ResultSet rs =pstmt.executeQuery();
+		int res = 0;
+		while(rs.next()) {
+			res = rs.getInt("friend_cnt");
+		}
+	
+		return (res==1);
+	}
+	
+	public Vector<Member> friendList(Member from) throws SQLException {
+		Vector<Member> list = new Vector<>();
+		PreparedStatement pstmt = openConnection("SelectFriendMembers");
+		pstmt.setString(1, from.getId());
+		ResultSet rs = pstmt.executeQuery();
+		while (rs.next()) {
+			String id = rs.getString("id");
+			String password = rs.getString("password");
+			String name = rs.getString("name");
+			String email = rs.getString("email");
+			String loginYN = rs.getString("Login_YN");
+			Member m = new Member(id,password,name,email,loginYN);
+			list.add(m);
+		}
+		
+		return list;
+	}
+	
+	public boolean removeFriend(Member from, Member to) throws SQLException {
+		PreparedStatement pstmt = openConnection("DeleteFriend");
+		pstmt.setString(1, from.getId());
+		pstmt.setString(2, to.getId());
+		pstmt.setString(3, to.getId());
+		pstmt.setString(4, from.getId());
+		return pstmt.executeUpdate() == 2;
 	}
 	
 }

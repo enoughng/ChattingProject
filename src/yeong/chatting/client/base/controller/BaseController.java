@@ -45,12 +45,12 @@ public class BaseController  implements Initializable{
 		initEvent();
 	}
 
-	protected final void action(ActionInfo info) {
+	protected  void action(ActionInfo info) {
 		if(info == null) return;
 		action = commandMap.get(info.getCommand());
 		action.action(info);
 	}
-	protected final void initCommand() {
+	protected void initCommand() {
 		commandMap = CommandMap.getCommandMap();
 	}
 

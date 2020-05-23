@@ -4,12 +4,15 @@ import java.awt.CheckboxGroup;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.Vector;
+
+import com.sun.xml.internal.ws.wsdl.writer.document.OpenAtts;
 
 import javafx.application.Platform;
 import yeong.chatting.model.ChattingProfile;
@@ -40,12 +43,12 @@ public class RequestCheck {
 	ProtocolType responseProtocol = null;
 
 	private boolean isBroadType = false;
-	
+
 	private InputThread t;
-	
+
 	private MainController controller = MainController.getMainController();
 
-	
+
 	public RequestCheck(InputThread t, Message msg) throws SQLException, IOException {
 		this.t = t;
 		request = msg;
@@ -97,7 +100,7 @@ public class RequestCheck {
 			break;
 		case REQUEST_SEARCH_ID:
 			response = searchID();
-		break;
+			break;
 		case REQUEST_SEARCH_PW:
 			response = searchPW();
 			break;
@@ -110,9 +113,18 @@ public class RequestCheck {
 		case REQUEST_DELETE_ACCOUNT:
 			response=deleteAccount();
 			break;
+		case REQUEST_ADD_FRIEND_REQUEST:
+			response=addFriendRequest();
+			break;
+		case REQUEST_ADD_FRIEND_RESPONSE:
+			response=addFriendResponse();
+			break;
+		case REQUEST_REMOVE_FRIEND:
+			response=removeFriend();
+			break;
 		default:
 			response = null;
-			
+
 		}
 
 		return response;
@@ -121,7 +133,7 @@ public class RequestCheck {
 	public boolean sendType() {
 		return isBroadType;
 	}
-	
+
 	/**
 	 * 서버UI에 로그찍기
 	 * @param msg
@@ -138,7 +150,7 @@ public class RequestCheck {
 			}
 		});
 	}
-	
+
 
 	/**
 	 * switch case 문에 따른 메소드들
@@ -152,14 +164,14 @@ public class RequestCheck {
 		ProtocolType responseProtocol;
 		Member loginMember = sDao.checkLogin(request.getFrom()); // DB 조회한 멤버
 		if (loginMember != null && loginMember.getLogin().equals("N")) { // 조회한 멤버가 있으면서 그 멤버가 로그인한 상태가 아니라면
-			
+
 			sDao.updateLogin(loginMember, true);
 			t.setCurrentID(loginMember.getId()); // InputThread의 이름을 현재 로그인한 멤버의 ID로 설정한다.
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_SUCCESS; // 보낼 메시지의 프로토콜 타입을 정해준다.
 			ServerThread.memberList.add(loginMember); // 서버쓰레드에 있는 멤버리스트를 더해준다.
 			ServerThread.isLogout=false; // 서버쓰레드 로그인상태변수를 로그인상태로 만들어준다.
 			response = new Message(responseProtocol, loginMember); // 응답메시지를 만든다.
-			
+
 			appendLog(loginMember.getId() + "(" + loginMember.getName() + ")님이 로그인 하셨습니다."); // 로그폼에 로그인을 띄워준다.
 		} else {
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_FAIL;
@@ -181,7 +193,7 @@ public class RequestCheck {
 		ServerThread.memberList.remove(request.getFrom());
 		Message response = new Message(responseProtocol, request.getFrom());
 		response.setMemberList(new Vector<Member>(ServerThread.memberList));
-		
+
 		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() +")"+ " 님이 로그아웃 하셨습니다.");
 		return  response;
 	}
@@ -207,13 +219,14 @@ public class RequestCheck {
 	 */
 	private Message getMembers() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_WAITINGROOM_MEMBER;
-
+		
 		//대기실 방 인원수 정보
 		Message response = new Message(responseProtocol, request.getFrom(), new Vector<Member>(ServerThread.memberList)); // 대기실 멤버
-//		response.getFrom(); // 대기실 
-		
+		//		response.getFrom(); // 대기실 
+		Vector<Member> friendList = sDao.friendList(request.getFrom());
 		Vector<RoomInfo> list = sDao.getRooms(); // 대기실 방정보 DB를 통해서 가져옴
 		response.setRoomList(new Vector<RoomInfo>(list)); // 대기실 방 정보를 Message에 담아줌
+		response.setFriendList(friendList);
 		return response;
 	}
 
@@ -239,7 +252,7 @@ public class RequestCheck {
 			response.setrInfo(result);
 			//대기실목록에서 해당 사용자 삭제
 			ServerThread.memberList.remove(request.getFrom());
-			
+
 			// 방이 정상적으로 만들어졌으면 해당 인원을 담을 백터를 생성해주고, 해당 백터에 방을 만든 멤버를 넣고 이를 메세지에 담아서 보내준다.
 			Vector<Member> newList = new Vector<>();
 			newList.add(request.getFrom());
@@ -309,7 +322,7 @@ public class RequestCheck {
 		ProtocolType responseProtocol;
 
 		RoomInfo DBrInfo = sDao.hasRoom(request.getrInfo());
-		
+
 		if(DBrInfo.getRoom_host().equals(request.getFrom().getId())) { //나가는사람이 방장이면 방폭파
 			isBroadType = false;
 			responseProtocol = ProtocolType.RESPONSE_EXITROOM_HOST;
@@ -323,7 +336,7 @@ public class RequestCheck {
 			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ["+DBrInfo.getRoom_num()+"번] "+DBrInfo.getRoom_title()+" 방에서 나가셨습니다.");
 
 		}
-		
+
 		ServerThread.memberList.add(request.getFrom()); // 요청된값 대기실인원으로 추가
 		response = new Message(responseProtocol, request.getFrom(), new Vector<Member>(ServerThread.memberList)); // 멤버정보
 		response.setrInfo(new RoomInfo(DBrInfo)); 
@@ -332,7 +345,7 @@ public class RequestCheck {
 		response.setRoomMemberList(new Vector<Member>(ServerThread.roomMemberList.get(DBrInfo.getRoom_num()))); // 들어가있는 방정보
 		return response;
 	}
-	
+
 	/**
 	 * 접속해 있는 방정보와 사용자정보, MSG값을 입력받아 방에 접속해있는 사람에게 돌려주는 메소드이다.
 	 */
@@ -343,31 +356,30 @@ public class RequestCheck {
 		// 프로토콜과 방정보만 바꿔준다.
 		request.setProtocol(responseProtocol);
 		request.setrInfo(dbRoomInfo);
-//		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방에서 채팅하셨습니다.");
+		//		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 ("+request.getrInfo().getRoom_num()+"번) "+request.getrInfo()+" 방에서 채팅하셨습니다.");
 		return request;
-		
+
 	}
-	
+
 	private Message whisper() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_WHISPER;
 		Message response = new Message(request);
 		response.setProtocol(responseProtocol);
-		
+
 		return response;
 	}
-	
-	
+
+
 	private Message checkID() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_IDCHECK;
-		
-		Log.i(getClass(), request.getMsg());
+
 		String isHave = sDao.checkID(request.getMsg());
 
 		Message response = new Message(responseProtocol,isHave);
 		response.setFrom(new Member(request.getMsg(),null));
 		return response;
 	}
-	
+
 	private Message invite() {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_INVITE_REQUEST;
 		Message response = new Message(request);
@@ -376,119 +388,116 @@ public class RequestCheck {
 
 		return response;
 	}
-	
+
 	private Message inviteUpdate() {
 		Message response = new Message(request);
 		response.setProtocol(ProtocolType.RESPONSE_INVITEUPDATE);
 		response.setMemberList(new Vector<Member>(ServerThread.memberList));
 		return response;
 	}
-	
+
 	private Message reject() {
 		Message response = request;
 		return response;
 	}
-	
+
 	private Message searchID() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_SEARCH_ID;
-		
+
 		SearchValue dbSv = sDao.selectSearchID(request.getSv());
-		
+
 		Message response = new Message(responseProtocol);
 		response.setSv(dbSv);
 		return response;
 	}
-	
+
 	private Message searchPW() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_SEARCH_PW;
-		
+
 		SearchValue dbSv = sDao.selectSearchPW(request.getSv());
-		
+
 		Message response = new Message(responseProtocol);
 		response.setSv(dbSv);
 		return response; 
 	}
-	
+
 	private Message profile() throws SQLException {
+		
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_PROFILE;
 		ChattingProfile dbResult = sDao.selectProfile(request.getTo());
-		Log.i(getClass(), dbResult.getId());
 		Message response = new Message(responseProtocol, request.getFrom());
 		response.setTo(request.getTo());
 		response.setProfile(dbResult);
 		
+		
+		for(Member m :sDao.friendList(request.getFrom())) {
+			if(m.getId().equals(dbResult.getId())) {
+				response.setMsg("친구 삭제");
+			}
+		}
+		
+		
+
 		return response;
 	}
-	
+
 	private Message profileEdit() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_PROFILE_EDIT;
 		boolean result = sDao.updateProfile(request.getFrom(), request.getProfile());
 		Message response = new Message(responseProtocol, request.getFrom());
-		
-		Log.i("RequestProfile : " + request.getProfile().getNickname()+"***");
 
-		
+
 		if(result && request.getrInfo()!=null) {
 			Map<Integer, Vector<Member>> serverMemberList = ServerThread.roomMemberList;
 			Vector<Member> roomMemberList = serverMemberList.get(request.getrInfo().getRoom_num());
 			Vector<Member> newMemberList = new Vector<>();
-			
-			Log.i(getClass(), "ROOMINFO Previous MemberList : " + roomMemberList);
+
 
 			for(int i=0;i<roomMemberList.size();i++) {
 				if(roomMemberList.get(i).getId().equals(request.getProfile().getId())) {
-					Log.i("ROOMINFO Before : " + roomMemberList.get(i).getName());
 					Member previousMember = roomMemberList.get(i);
 					Member newMember = new Member(previousMember);
 					newMember.setName(request.getProfile().getNickname());
-					Log.i("ROOMINFO RequestProfile : " + request.getProfile().getNickname());
-					Log.i("ROOMINFO After : " + newMember.getName());
 					newMemberList.add(newMember);
 					continue;
 				}
 				newMemberList.add(roomMemberList.get(i));
 			}
-			Log.i(getClass(), "ROOMINFO new MemberList : " + newMemberList);
 			response.setrInfo(request.getrInfo());
 			ServerThread.roomMemberList.put(request.getrInfo().getRoom_num(), new Vector<Member>(newMemberList));
 			response.setRoomMemberList(new Vector<Member>(newMemberList));
-			
+
 			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 "+ request.getrInfo()+" 방에서 프로필을 변경하셨습니다");
 
 		} else if(result) {
 			Vector<Member> newMemberList = new Vector<>();
 			Vector<Member> previousMemberList = ServerThread.memberList;
-			Log.i(getClass(), "WAITING Previous MemberList : " + ServerThread.memberList);
 
 			for(int i=0;i<previousMemberList.size();i++) {
 				if(previousMemberList.get(i).getId().equals(request.getProfile().getId())) {
-					Log.i("WAITING Before : " + previousMemberList.get(i).getName());
 					Member previousMember = previousMemberList.get(i);
 					Member newMember = new Member(previousMember);
 					newMember.setName(request.getProfile().getNickname());
-					Log.i("WAITING RequestProfile : " + request.getProfile().getNickname());
-					Log.i("WAITING After : " + newMember.getName());
 					newMemberList.add(newMember);
 					continue;
 				}
 				newMemberList.add(previousMemberList.get(i));
 			}
-			Log.i(getClass(), "WAITING new MemberList : " + newMemberList);
 			ServerThread.memberList = new Vector<Member>(newMemberList);
 			response.setMemberList(newMemberList);			
 			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 대기실에서 프로필을 변경하셨습니다");
 		}
-		
+
 		response.setMsg(Boolean.toString(result));
 		response.setProfile(request.getProfile());
-		
+
 		Log.i(getClass(), "MemberList : " + ServerThread.memberList);
 		Log.i(getClass(), "roomMemberList : " + ServerThread.roomMemberList);
-		
-		
+
+
 		return response;
 	}
-	
+
 	private Message deleteAccount() throws SQLException {
 		Log.i(getClass(),"!"+"DB실행직전");
 		boolean result = sDao.deleteAccount(request.getFrom());
@@ -500,4 +509,50 @@ public class RequestCheck {
 		}
 		return response;
 	}
+
+	private Message addFriendRequest() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_ADD_FRIEND_REQUEST;
+		
+		if(sDao.friendCheck(request.getFrom(), request.getTo())) {
+			Message response = new Message(ProtocolType.RESPONSE_ADD_FRIEND_REQUEST_FAIL);
+			return response;
+		}
+		Member result = sDao.selectMember(request.getTo().getId());
+		Message response = new Message(responseProtocol, request.getFrom());
+		response.setTo(result);
+		return response;
+	}
+	
+	private Message addFriendResponse() throws SQLException {
+		ProtocolType responseProtocol = ProtocolType.RESPONSE_ADD_FRIEND_RESPONSE;
+		if(request.getMsg().equals("accept")) {
+			sDao.addFriend(request.getFrom(), request.getTo());
+		}
+		
+		Message response = new Message(request);
+		response.setFriendList(sDao.friendList(request.getFrom())); // 클라2
+		response.setResponseFriendList(sDao.friendList(request.getTo())); // 클라1
+		response.setProtocol(responseProtocol);
+		
+		return response;
+	}
+	
+	private Message removeFriend() throws SQLException {
+		
+		ProtocolType responseP = ProtocolType.RESPONSE_REMOVE_FRIEND;
+		Message response = new Message(request);
+		response.setProtocol(responseP);
+		Member m = sDao.selectMember(request.getTo().getId());
+		
+		boolean result = sDao.removeFriend(request.getFrom(), request.getTo());
+		response.setMsg(Boolean.toString(result));
+		response.setTo(m);
+		response.setFriendList(sDao.friendList(request.getFrom())); // 클라2
+		response.setResponseFriendList(sDao.friendList(request.getTo())); // 클라1
+		
+		return response;
+	}
+	
+	
+	
 }

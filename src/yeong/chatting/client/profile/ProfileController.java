@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.model.ChattingProfile;
+import yeong.chatting.util.Log;
 
 public class ProfileController extends BaseController{
 
@@ -21,36 +22,44 @@ public class ProfileController extends BaseController{
 	@FXML TextArea introduce;
 	@FXML Button add;
 	@FXML Button cancelBtn;
-	
+
 	public static ProfileController con;
-	
+
 	private StringProperty strName;
 	private StringProperty strId;
-	
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		initLabelSetting();
 		con = this;
 	}
-	
+
 	@FXML
 	private void addFriend() {
-		ActionInfo addAction = new ActionInfo("AddFriend", add);
-		action(addAction);
+		if(add.getText().equals("친구 추가")) {
+			ActionInfo addAction = new ActionInfo("AddFriend", add);
+			addAction.setUserDatas(id.getText());
+			action(addAction);
+		} else {
+			ActionInfo removeAction = new ActionInfo("RemoveFriend", add);
+			removeAction.setUserDatas(id.getText());
+			Log.i(id.getText()+"!!!!!!!");
+			action(removeAction);
+		}
 	}
-	
+
 	@FXML
 	private void cancel() {
 		Stage s = (Stage)cancelBtn.getScene().getWindow();
 		s.close();
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
-	 * 동적으로 변환시켜줌
+	 * 리스트를 동적으로 변환시켜줌
 	 */
 	public void setProfile(ChattingProfile cp) {
 		strName.set(cp.getNickname());
@@ -59,7 +68,17 @@ public class ProfileController extends BaseController{
 		if(cp.getIntroduce()!=null)
 			introduce.appendText(cp.getIntroduce());
 	}
-	
+
+	public void setProfileFriend(ChattingProfile cp, String msg) {
+		strName.set(cp.getNickname());
+		strId.set(cp.getId());
+		introduce.setText("");
+		if(cp.getIntroduce()!=null)
+			introduce.appendText(cp.getIntroduce());
+		add.setText(msg);
+	}
+
+
 	/**
 	 * 외부에서 이 객체 접근
 	 * @return
@@ -67,7 +86,7 @@ public class ProfileController extends BaseController{
 	public static ProfileController getProfileController() {
 		return con;
 	}
-	
+
 	private void initLabelSetting() {
 		strName = new SimpleStringProperty();
 		strId = new SimpleStringProperty();

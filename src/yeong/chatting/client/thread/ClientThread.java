@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.Optional;
+import java.util.Vector;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -323,49 +324,54 @@ public class ClientThread implements Runnable {
 				url = ClientInfo.getResource(CommonPathAddress.ProfileLayout);				
 			}
 			FXMLLoader loader = new FXMLLoader(url);
-			
-				Platform.runLater( () -> {
+
+			Platform.runLater( () -> {
 				Parent p=null;
 				if(isMy) {
-					
+
 					try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
 					MyProfileController con = loader.getController();
-										
+					
 					con.setProfile(message.getProfile());
 					Scene scene = new Scene(p);
 					Stage stage = new Stage();
+					stage.setTitle(ClientInfo.currentMember.toString());
 					stage.setScene(scene);
 					stage.show();
 				} else {
 					try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
 					ProfileController con = loader.getController();
-					con.setProfile(message.getProfile());
+					if(message.getMsg()!=null) 
+						con.setProfileFriend(message.getProfile(),message.getMsg());
+					else 
+						con.setProfile(message.getProfile());
 					Scene scene = new Scene(p);
 					Stage stage = new Stage();
+					stage.setTitle(ClientInfo.currentMember.toString());
 					stage.setScene(scene);
 					stage.show();
 				}
 			});
-			
+
 			break;
 		case RESPONSE_PROFILE_EDIT:
-				if(message.getMsg().equals("true")) {
-					ClientInfo.currentMember.setName(message.getProfile().getNickname());
-					Log.i("**"+ClientInfo.currentMember.getName());
-					Platform.runLater( () -> {
+			if(message.getMsg().equals("true")) {
+				ClientInfo.currentMember.setName(message.getProfile().getNickname());
+				Log.i("**"+ClientInfo.currentMember.getName());
+				Platform.runLater( () -> {
 					Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 성공하였습니다.");
 					alert.setHeaderText("알림");
 					alert.setTitle("성공");
 					alert.showAndWait();
-					});
-				} else {
-					Platform.runLater( () -> {
+				});
+			} else {
+				Platform.runLater( () -> {
 					Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 실패하였습니다.");
 					alert.setHeaderText("알림");
 					alert.setTitle("실패");
 					alert.showAndWait();
-					});
-				}
+				});
+			}
 			break;
 		case RESPONSE_DELETE_ACCOUNT:
 			if(message.getMsg().equals("true")) {
@@ -381,13 +387,124 @@ public class ClientThread implements Runnable {
 					try { oos.writeObject(message); } catch (IOException e) { e.printStackTrace(); }
 					primaryStage.close();
 				});
-				
+
 			}
 			break;
-		
+		case RESPONSE_ADD_FRIEND_REQUEST:
+			Platform.runLater( () -> {
+				addFriendRequest(message);				
+			});
+			break;
+		case RESPONSE_ADD_FRIEND_RESPONSE:
+			Platform.runLater( () -> {
+				addFriendResponse(message);
+			});
+			break;
+		case RESPONSE_ADD_FRIEND_REQUEST_FAIL:
+			Platform.runLater( () -> {
+				Alert alert = new Alert(AlertType.ERROR, "해당 유저와는 이미 친구입니다.");
+				alert.setTitle("잘못된 요청");
+				alert.setHeaderText("에러");
+				alert.show();
+			});
+			break;
+		case RESPONSE_REMOVE_FRIEND:
+			Platform.runLater( () -> {
+				if(message.getMsg().equals("true") && message.getFrom().equals(ClientInfo.currentMember)) {
+					Alert alert = new Alert(AlertType.ERROR, message.getTo() + "님을 성공적으로 삭제하였습니다.");
+					alert.setTitle(ClientInfo.currentMember.toString());
+					alert.setHeaderText("삭제 성공");
+					alert.show();
+					updateFriendList(message.getFriendList());
+				}else if(message.getMsg().equals("true")) {
+					Alert alert = new Alert(AlertType.ERROR, message.getFrom() + "님에게 친구삭제 당했습니다!");
+					alert.setTitle(ClientInfo.currentMember.toString());
+					alert.setHeaderText("삭제 알림 ");
+					alert.show();
+					updateFriendList(message.getResponseFriendList());
+
+				} else {
+					Alert alert = new Alert(AlertType.ERROR, message.getTo() + "님의 삭제를 실패하였습니다");
+					alert.setTitle("삭제요청");
+					alert.setHeaderText("삭제 실패");
+					alert.show();
+				}
+			});
+			break;
+
 		default:
 		}
 	}
+
+
+	private void addFriendRequest(Message message) {
+		if((message.getFrom().equals(ClientInfo.currentMember))) { // 보내는 사람이라면
+			Alert alert = new Alert(AlertType.CONFIRMATION, message.getTo() + "님에게 친구 신청을 하셨습니다.");
+			alert.setTitle("친구신청");
+			alert.setHeaderText("친구신청");
+			ButtonType bt1 = new ButtonType("확인");
+			alert.getButtonTypes().setAll(bt1);
+			alert.show();
+		} else { // 받는사람이라면
+			Alert alert = new Alert(AlertType.INFORMATION, "수락하시겠습니까?");
+			alert.setTitle("친구신청");
+			alert.setHeaderText(message.getFrom() + "님에게 친구 신청이 왔습니다.");
+			ButtonType bt1 = new ButtonType("수락");
+			ButtonType bt2 = new ButtonType("거절");
+			alert.getButtonTypes().setAll(bt1,bt2);
+			Optional<ButtonType> result = alert.showAndWait();
+			String msg = null;
+			if(result.get() == bt1) {
+				msg = "accept";
+			} else {				
+				msg = "deny";
+			}
+			Member previousFrom = message.getFrom();
+			Member previousTo = message.getTo();
+			ProtocolType requestProtocol = ProtocolType.REQUEST_ADD_FRIEND_RESPONSE;
+			Message request = new Message(requestProtocol,previousTo);
+			request.setTo(previousFrom);
+			request.setMsg(msg);
+			try { oos.writeObject(request); } catch (IOException e) { e.printStackTrace(); }
+		}
+	}
+
+	private void addFriendResponse(Message message) {
+		if((message.getFrom().equals(ClientInfo.currentMember))) { // 보내는 사람이라면
+			Alert alert = null;
+			if(message.getMsg().equals("accept")) {
+				alert = new Alert(AlertType.INFORMATION, message.getTo() + "님의 친구요청을 수락하셨습니다.");
+				alert.setTitle("친구수락");
+				alert.setHeaderText(message.getTo()+"님과 친구가 되었습니다.");
+				updateFriendList(message.getFriendList());
+			} else {
+				alert = new Alert(AlertType.INFORMATION, message.getTo() + "님의 친구요청을 거절하셨습니다.");
+				alert.setTitle("친구거절");
+				alert.setHeaderText(message.getTo()+"님과 친구가 되지 못했습니다.");
+			}
+			ButtonType bt1 = new ButtonType("확인");
+			alert.getButtonTypes().setAll(bt1);
+			alert.showAndWait();
+		} else { // 받는 사람이라면
+			Alert alert = null;
+			if(message.getMsg().equals("accept")) {
+				alert = new Alert(AlertType.INFORMATION, message.getFrom() + "님이 친구요청을 수락하셨습니다.");
+				alert.setTitle("친구수락");
+				alert.setHeaderText(message.getFrom()+"님과 친구가 되었습니다.");
+				updateFriendList(message.getResponseFriendList());
+			} else {
+				alert = new Alert(AlertType.INFORMATION, message.getFrom() + "님이 친구요청을 거절하셨습니다.");
+				alert.setTitle("친구거절");
+				alert.setHeaderText(message.getFrom()+"님과 친구가 되지 못했습니다.");
+			}
+			ButtonType bt1 = new ButtonType("확인");
+			alert.getButtonTypes().setAll(bt1);
+			alert.showAndWait();
+		}
+	}
+
+
+
 
 	private void search(Message msg) {
 		String responseStr;
@@ -411,7 +528,7 @@ public class ClientThread implements Runnable {
 					alert = new Alert(AlertType.INFORMATION, "ID = "+responseStr);
 					alert.setTitle("ID 찾기");
 					alert.setHeaderText("일치하는 아이디");	
-					
+
 				} else {
 					alert = new Alert(AlertType.INFORMATION, "PASSWORD = " + responseStr);
 					alert.setTitle("PASSWORD 찾기");
@@ -422,6 +539,16 @@ public class ClientThread implements Runnable {
 				sc.getSearchControllerStage().close();
 			}
 		});
+	}
+
+
+
+
+	private void updateFriendList(Vector<Member> list) {
+		Log.i(getClass() + "!!" + list);
+		WaitingRoomController con = WaitingRoomController.getController();
+		ObservableList<Member> oList = FXCollections.observableArrayList(list);
+		con.setFriendView(oList);
 	}
 
 	private void setWaitingRoom(Message message) throws IOException {
@@ -486,6 +613,12 @@ public class ClientThread implements Runnable {
 			con.setTableView(roomList);
 		}
 
+		if(msg.getFriendList() != null && msg.getFrom().equals(ClientInfo.currentMember)) {
+			Log.i(getClass(),msg.getFriendList());
+			ObservableList<Member> friendList = FXCollections.observableArrayList(msg.getFriendList());
+			con.setFriendView(friendList);
+		}
+
 	}
 
 
@@ -515,5 +648,7 @@ public class ClientThread implements Runnable {
 			inviteCon.setListView(memberList);
 		}
 	}
+
+
 
 }

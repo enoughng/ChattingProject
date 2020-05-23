@@ -75,6 +75,7 @@ public class InputThread implements Runnable {
 					send(response);
 				}
 
+				Log.i(getClass(),response.getProtocol());
 				switch (response.getProtocol()) {
 				case RESPONSE_CREATEROOM:
 					updateWaitingRoom(request);
@@ -112,6 +113,13 @@ public class InputThread implements Runnable {
 					} else if(response.getMemberList() != null){
 						updateWaitingRoom(response);
 					}
+					break;
+				case RESPONSE_ADD_FRIEND_REQUEST:
+					chattingRoomWhisper(response);
+					break;
+				case RESPONSE_ADD_FRIEND_RESPONSE:
+				case RESPONSE_REMOVE_FRIEND:
+					chattingRoomWhisper(response);
 					break;
 				default:
 				}
@@ -197,7 +205,7 @@ public class InputThread implements Runnable {
 	}
 
 	/**
-	 * 귓속말
+	 * 귓속말 즉, To에게만 보내는 메세지
 	 */
 	private void chattingRoomWhisper(Message response) throws IOException {
 		for(InputThread t:ServerThread.serverThreads) {
@@ -249,14 +257,19 @@ public class InputThread implements Runnable {
 
 		// 2. 담아줄 멤버정보를 ServerThread에서 가져온다.
 		Vector<Member> memberList = ServerThread.memberList;
+		
+		// 2.5 담아줄 친구목록을 DB에서 갖고온다.
+		Vector<Member> friendList = sDao.friendList(request.getFrom());
 
 		// 3. 메세지에 실어서 보낸다.
 		response = new Message(responseProtocol, new Member("Broadcast Server", null));
 		response.setRoomList(new Vector<RoomInfo>(rooms));
 		response.setMemberList(new Vector<Member>(memberList));
-
+		response.setFriendList(new Vector<Member>(friendList));
+		
 		broadcastSend(response);
 	}
+	
 
 	/**
 	 * roomMemberList(Vector)를 담으면 된다.

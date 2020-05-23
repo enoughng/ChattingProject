@@ -33,7 +33,8 @@ public class Message implements Serializable{
 	private Vector<Member> roomMemberList; // 특정 방 접속멤버
 	private Vector<RoomInfo> roomList; // 대기실 방 정보
 	private Vector<Member> memberList; // 대기실 멤버
-	
+	private Vector<Member> friendList;
+	private Vector<Member> responseFriendList;
 	
 	
 	
@@ -50,6 +51,8 @@ public class Message implements Serializable{
 		this.roomList = msg.roomList;
 		this.roomMemberList = msg.roomMemberList;
 		this.memberList = msg.memberList;
+		this.sv = msg.sv;
+		this.profile = msg.profile;
 	}
 	
 	public Message(ProtocolType protocol, Member from, Member to, String msg) {
@@ -82,6 +85,22 @@ public class Message implements Serializable{
 	
 	
 	
+
+	public Vector<Member> getResponseFriendList() {
+		return responseFriendList;
+	}
+
+	public void setResponseFriendList(Vector<Member> responseFriendList) {
+		this.responseFriendList = responseFriendList;
+	}
+
+	public Vector<Member> getFriendList() {
+		return friendList;
+	}
+
+	public void setFriendList(Vector<Member> friendList) {
+		this.friendList = friendList;
+	}
 
 	public ChattingProfile getProfile() {
 		return profile;

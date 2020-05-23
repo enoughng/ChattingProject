@@ -44,13 +44,15 @@ public class WaitingRoomController extends BaseController {
 
 	private ObservableList<Member> members;
 	private ObservableList<RoomInfo> roomInfos;
+	private ObservableList<Member> friends;
 
 	private static WaitingRoomController con;
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		con = this;
-		initListView();
+		initListView(memberList, members,0);
+		initListView(friendList, friends,1);
 		initTableView();
 
 	}
@@ -99,6 +101,11 @@ public class WaitingRoomController extends BaseController {
 		members.clear(); 
 		members.addAll(list);
 	}
+	
+	public void setFriendView(ObservableList<Member> list ) {
+		Log.i("!" + list);
+		friends.setAll(list);
+	}
 
 	/**
 	 * 방 정보 갱신
@@ -116,7 +123,7 @@ public class WaitingRoomController extends BaseController {
 	/**
 	 * ListView와 ObservableList<Member> 연결
 	 */
-	private void initListView() {
+	private void initListView(ListView<Member> memberList,ObservableList<Member> members, int i) {
 		members = FXCollections.observableArrayList();
 		memberList.setItems(members);
 		memberList.setOnMouseClicked(event -> {
@@ -135,7 +142,14 @@ public class WaitingRoomController extends BaseController {
 				action(action);
 			}
 		});
-
+		if(i==0) {
+			this.memberList = memberList;
+			this.members = members;
+		} else {
+			this.friendList = memberList;
+			this.friends = members;
+		}
+		
 	}
 
 

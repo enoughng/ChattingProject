@@ -1,6 +1,8 @@
 package yeong.chatting.model;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -22,6 +24,14 @@ public class Member implements Serializable{
 	
 	
 	
+	public Member(String id, String password, String name, String email, String isLogin) {
+		this.id = id;
+		this.password = password;
+		this.name = name;
+		this.email = email;
+		this.isLogin = isLogin;
+	}
+
 	public Member(Member m) {
 		this.id =m.id;
 		this.password = m.password;
@@ -30,6 +40,20 @@ public class Member implements Serializable{
 		this.isLogin = m.isLogin;
 		this.place = m.place;
 	}
+	
+	/**
+	 * rs의 값이 5개일때만
+	 * @param rs
+	 * @throws SQLException
+	 */
+	public Member(ResultSet rs) throws SQLException {
+		this.id = rs.getString("id");
+		this.password = rs.getString("password");
+		this.name = rs.getString("name");
+		this.email = rs.getString("email");
+		this.isLogin = rs.getString("login_yn");
+	}
+	
 	public Member(String id, String password) {
 		this.id = (id);
 		this.password =(password);
