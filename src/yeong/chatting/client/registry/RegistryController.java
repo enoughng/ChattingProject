@@ -15,6 +15,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
@@ -31,6 +33,8 @@ import yeong.chatting.util.Log;
  */
 public class RegistryController extends BaseController{
 
+	@FXML BorderPane regMain;
+	
 	// fxml 컨트롤에 대한 변수값
 	@FXML private TextField id;
 	@FXML private TextField email1;

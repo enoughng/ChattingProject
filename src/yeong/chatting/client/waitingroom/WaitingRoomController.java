@@ -41,7 +41,7 @@ import yeong.chatting.util.Log;
  */
 public class WaitingRoomController extends BaseController {
 
-	@FXML BorderPane main;
+	@FXML BorderPane waitingMain;
 	
 	@FXML TableView<RoomInfo> roomList;
 	@FXML TableView<Member> friendList;

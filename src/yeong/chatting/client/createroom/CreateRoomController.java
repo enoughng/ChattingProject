@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
@@ -17,6 +18,8 @@ import yeong.chatting.util.CommonPathAddress;
 import yeong.chatting.util.Log;
 
 public class CreateRoomController extends BaseController {
+	
+	@FXML BorderPane formMain;
 	
 	@FXML TextField room_title;
 	@FXML PasswordField room_password;

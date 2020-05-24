@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
@@ -12,6 +13,8 @@ import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.util.Log;
 
 public class SearchController extends BaseController{
+	
+	@FXML TabPane main;
 	
 	@FXML TextField idNickname;
 	@FXML TextField idEmail;

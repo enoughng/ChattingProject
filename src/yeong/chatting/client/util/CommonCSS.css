@@ -26,7 +26,25 @@ Button {
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
 }
 
-#main, #chatMain {
+#main {
      -fx-background-image: url("/images/background.jpg");
-	 
 }
+
+#chatMain {
+	 -fx-background-image: url("/images/chatBackground.jpg");
+}
+
+#waitingMain {
+	 -fx-background-image: url("/images/waitingBackground.jpg");
+}
+
+#regMain {
+	 -fx-background-image: url("/images/regBackground.jpg");
+
+}
+#formMain {
+	 -fx-background-image: url("/images/formBackground.jpg");
+
+}
+
+
