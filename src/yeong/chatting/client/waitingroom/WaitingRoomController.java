@@ -19,6 +19,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
@@ -39,6 +41,8 @@ import yeong.chatting.util.Log;
  */
 public class WaitingRoomController extends BaseController {
 
+	@FXML BorderPane main;
+	
 	@FXML TableView<RoomInfo> roomList;
 	@FXML TableView<Member> friendList;
 	@FXML ListView<Member> memberList;

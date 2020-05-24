@@ -14,6 +14,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import yeong.chatting.client.base.action.ActionInfo;
@@ -26,6 +27,8 @@ import yeong.chatting.util.Log;
 
 public class ChattingRoomController extends BaseController{
 
+	@FXML BorderPane chatMain;
+	
 	@FXML private ListView<Member> memberList;
 	@FXML private TextArea ChattingLog;
 	@FXML private TextField chat;

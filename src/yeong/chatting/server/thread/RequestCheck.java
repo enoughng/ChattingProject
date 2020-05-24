@@ -513,6 +513,14 @@ public class RequestCheck {
 	private Message addFriendRequest() throws SQLException {
 		ProtocolType responseProtocol = ProtocolType.RESPONSE_ADD_FRIEND_REQUEST;
 		
+		
+		Member toMember =  sDao.selectMember(request.getTo().getId());
+		if(toMember.getIsLogin().equals("N")) {
+			Message response = new Message(ProtocolType.RESPONSE_ADD_FRIEND_REQUEST_FAIL);
+			response.setMsg("N");
+			return response;
+		}
+		
 		if(sDao.friendCheck(request.getFrom(), request.getTo())) {
 			Message response = new Message(ProtocolType.RESPONSE_ADD_FRIEND_REQUEST_FAIL);
 			return response;

@@ -68,9 +68,8 @@ public class ClientThread implements Runnable {
 			while(true) {
 				message = (Message)ois.readObject();
 				checkProtocol(message);
-			}	
+			}
 		} catch(NullPointerException e) {
-			e.printStackTrace();
 			Platform.runLater( () -> {
 				Alert alert = new Alert(AlertType.ERROR, "서버가 닫혀있어 종료합니다."); 
 				alert.showAndWait();
@@ -398,10 +397,17 @@ public class ClientThread implements Runnable {
 			break;
 		case RESPONSE_ADD_FRIEND_REQUEST_FAIL:
 			Platform.runLater( () -> {
-				Alert alert = new Alert(AlertType.ERROR, "해당 유저와는 이미 친구입니다.");
-				alert.setTitle("잘못된 요청");
-				alert.setHeaderText("에러");
-				alert.show();
+				if(message.getMsg().equals("N")) {
+					Alert alert = new Alert(AlertType.ERROR, "해당 유저는 접속해 있지 않습니다.");
+					alert.setTitle("잘못된 요청");
+					alert.setHeaderText("에러");
+					alert.show();
+				} else {
+					Alert alert = new Alert(AlertType.ERROR, "해당 유저와는 이미 친구입니다.");
+					alert.setTitle("잘못된 요청");
+					alert.setHeaderText("에러");
+					alert.show();
+				}
 			});
 			break;
 		case RESPONSE_REMOVE_FRIEND:

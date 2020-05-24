@@ -31,6 +31,7 @@ public class GoAction implements CommonAction {
 			} else if(info.getURL().toString().indexOf("CreateRoomLayout.fxml") != -1) {
 				info.getPrimaryStage().setTitle("채팅방 만들기");
 			}
+			primaryStage.setResizable(false);
 			primaryStage.setScene(scene);
 			primaryStage.show();
 
@@ -59,8 +60,7 @@ public class GoAction implements CommonAction {
 			} else if(url.toString().indexOf(CommonPathAddress.ChattingRoomLayout) != -1) {
 				stage.setTitle(ClientInfo.currentRoom.getRoom_num()+ " 번 채팅방" + " : " + ClientInfo.currentMember.getName() + "님");
 			}
-			
-			
+			stage.setResizable(false);
 			stage.setScene(scene);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
