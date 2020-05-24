@@ -333,7 +333,7 @@ public class ClientThread implements Runnable {
 					con.setProfile(message.getProfile());
 					Scene scene = new Scene(p);
 					Stage stage = new Stage();
-					stage.setTitle(ClientInfo.currentMember.toString());
+					stage.setTitle("나의 프로필");
 					stage.setScene(scene);
 					stage.show();
 				} else {
@@ -345,7 +345,7 @@ public class ClientThread implements Runnable {
 						con.setProfile(message.getProfile());
 					Scene scene = new Scene(p);
 					Stage stage = new Stage();
-					stage.setTitle(ClientInfo.currentMember.toString());
+					stage.setTitle(message.getTo()+"님의 프로필");
 					stage.setScene(scene);
 					stage.show();
 				}
