@@ -266,10 +266,11 @@ public class ClientThread implements Runnable {
 				Parent p=null;
 				try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
 				Scene scene = new Scene(p);
-
+				
 				Stage s = new Stage();
 				s.initOwner(primaryStage);
 				s.initModality(Modality.APPLICATION_MODAL);
+				s.setTitle("초대하기");
 				s.setScene(scene);
 				s.show();
 				InviteController inviteCon = InviteController.getCon();	/** 초대기능 ListView*/
@@ -621,7 +622,6 @@ public class ClientThread implements Runnable {
 		}
 
 		if(msg.getFriendList() != null && msg.getFrom().equals(ClientInfo.currentMember)) {
-			Log.i(ClientInfo.currentMember + "이 사람의 친구목록 갱신 : " + msg.getFriendList());
 			ObservableList<Member> friendList = FXCollections.observableArrayList(msg.getFriendList());
 			con.setFriendView(friendList);
 		}

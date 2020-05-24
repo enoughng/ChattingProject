@@ -182,16 +182,12 @@ public class InputThread implements Runnable {
 	 */
 	private void updateFriendListMember(Message msg) throws SQLException, IOException {
 		Vector<Member> friendList = msg.getFriendList();
-		Log.i("friendList"+friendList);
 		for(Member m :friendList) {
 			if(m.getIsLogin().equals("Y")) {
-				Log.i(m + " Y발견");
 				for(InputThread t :ServerThread.serverThreads) {
 					if(t.currentMemberID.equals(m.getId())) {
-						Log.i(t.currentMemberID+ " 에게 response");
 						Vector<Member> friendResponseList = sDao.friendList(m);
 						msg.setResponseFriendList(friendResponseList);
-						Log.i(friendResponseList + "가 보내짐");
 						msg.setProtocol(ProtocolType.UPDATE_FRIEND_LIST);
 						t.send(msg);
 					}

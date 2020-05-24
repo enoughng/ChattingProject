@@ -28,6 +28,8 @@ Button {
 
 #main {
      -fx-background-image: url("/images/background.jpg");
+     -fx-background-position: center;
+     -fx-background-repeat: no-repeat;
 }
 
 #chatMain {
@@ -36,15 +38,32 @@ Button {
 
 #waitingMain {
 	 -fx-background-image: url("/images/waitingBackground.jpg");
+	 -fx-background-position: center;
+     -fx-background-repeat: no-repeat;
 }
 
 #regMain {
 	 -fx-background-image: url("/images/regBackground.jpg");
+	 -fx-background-position: center;
+     -fx-background-repeat: no-repeat;
 
 }
 #formMain {
 	 -fx-background-image: url("/images/formBackground.jpg");
+	 -fx-background-position: center;
+     -fx-background-repeat: no-repeat;
+}
 
+#MyProfileMain {
+	-fx-background-image: url("/images/MyProfileBackground.png");
+	-fx-background-position: center;
+	
+}
+
+#ProfileMain {
+	-fx-background-image: url("/images/ProfileBackground.png");
+	-fx-background-position: center;
+	
 }
 
 

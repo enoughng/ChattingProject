@@ -1,6 +1,8 @@
 package yeong.chatting.client.profile;
 
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.BorderPane;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,6 +19,8 @@ import yeong.chatting.util.Log;
 
 public class ProfileController extends BaseController{
 
+	@FXML BorderPane ProfileMain;
+	
 	@FXML Label profileTitle;
 	@FXML Label nickname;
 	@FXML Label id;

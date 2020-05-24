@@ -111,11 +111,8 @@ public class WaitingRoomController extends BaseController {
 	}
 
 	public void setFriendView(ObservableList<Member> list ) {
-		
-		Log.i(getClass(), list);
 		friends.clear();
 		friends.addAll(list);
-		Log.i(getClass(), members + "!");
 	}
 
 	/**
