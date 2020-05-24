@@ -122,6 +122,34 @@ public class ChattingRoomController extends BaseController{
 		if(m.equals(ClientInfo.currentMember))
 			chat.setText("");
 	}
+	
+	public void exit(Member m) {
+		StringBuilder sb = new StringBuilder();
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		String time = sdf.format(Calendar.getInstance().getTime());
+		
+		sb.append("[");
+		sb.append(time);
+		sb.append("] ");
+		sb.append(m.toString());
+		sb.append(" ¥‘¿Ã ≈¿Â «œºÃΩ¿¥œ¥Ÿ.");
+		sb.append("\n");
+		ChattingLog.appendText(sb.toString());
+	}
+	
+	public void enter(Member m) {
+		StringBuilder sb = new StringBuilder();
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		String time = sdf.format(Calendar.getInstance().getTime());
+		
+		sb.append("[");
+		sb.append(time);
+		sb.append("] ");
+		sb.append(m.toString());
+		sb.append(" ¥‘¿Ã ¿‘¿Â «œºÃΩ¿¥œ¥Ÿ.");
+		sb.append("\n");
+		ChattingLog.appendText(sb.toString());
+	}
 
 	public void setWhisper(Member m, Member to, String msg) {
 		StringBuilder sb = new StringBuilder();

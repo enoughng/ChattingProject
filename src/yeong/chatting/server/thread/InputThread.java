@@ -82,10 +82,16 @@ public class InputThread implements Runnable {
 				case RESPONSE_ENTERROOM_SUCCESS:
 					updateChattingRoom(request);
 					updateWaitingRoom(request);
+					request.setProtocol(ProtocolType.RESPONSE_ENTER_EXIT_MESSAGE);
+					request.setMsg("Y");
+					chattingRoomSend(request);
 					break;
 				case RESPONSE_EXITROOM:
 					updateChattingRoom(request);
 					updateWaitingRoom(request);
+					request.setProtocol(ProtocolType.RESPONSE_ENTER_EXIT_MESSAGE);
+					request.setMsg("N");
+					chattingRoomSend(request);
 					break;
 				case RESPONSE_EXITROOM_HOST:
 					response.setProtocol(ProtocolType.RESPONSE_WAITINGROOM_MEMBER);

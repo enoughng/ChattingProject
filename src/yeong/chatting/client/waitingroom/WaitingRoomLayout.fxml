@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 
-<BorderPane fx:id="waitingMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@../util/CommonCSS.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="yeong.chatting.client.waitingroom.WaitingRoomController">
+<BorderPane fx:id="waitingMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="520.0" prefWidth="700.0" stylesheets="@../util/CommonCSS.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="yeong.chatting.client.waitingroom.WaitingRoomController">
    <right>
       <FlowPane alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -19,14 +19,14 @@
               <tabs>
                 <Tab closable="false" text="대기실 목록">
                      <content>
-                        <FlowPane prefHeight="310.0" prefWidth="200.0">
+                        <FlowPane prefHeight="306.0" prefWidth="200.0">
                            <children>
                               <Label alignment="CENTER" prefHeight="15.0" prefWidth="200.0" text="대기실 목록">
                                  <padding>
                                     <Insets bottom="5.0" top="10.0" />
                                  </padding>
                               </Label>
-                              <ListView fx:id="memberList" prefHeight="255.0" prefWidth="200.0" />
+                              <ListView fx:id="memberList" prefHeight="250.0" prefWidth="200.0" />
                            </children>
                         </FlowPane>
                      </content>
@@ -52,7 +52,7 @@
                 </Tab>
               </tabs>
             </TabPane>
-            <FlowPane alignment="CENTER" orientation="VERTICAL" prefHeight="100.0" prefWidth="200.0" vgap="5.0">
+            <FlowPane alignment="CENTER" orientation="VERTICAL" prefHeight="130.0" prefWidth="200.0" vgap="5.0">
                <children>
                   <Button fx:id="createBtn" mnemonicParsing="false" onAction="#create" prefHeight="30.0" prefWidth="150.0" text="방 만들기">
                      <FlowPane.margin>
@@ -84,7 +84,7 @@
       <FlowPane alignment="CENTER" maxWidth="444.0" orientation="VERTICAL" prefHeight="460.0" prefWidth="444.0" vgap="10.0" BorderPane.alignment="CENTER">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="15.0" prefWidth="440.0" text="현재 방 정보" />
-            <TableView fx:id="roomList" prefHeight="413.0" prefWidth="440.0">
+            <TableView fx:id="roomList" prefHeight="445.0" prefWidth="440.0">
               <columns>
                 <TableColumn prefWidth="75.0" resizable="false" text="방 번호" />
                 <TableColumn prefWidth="124.0" resizable="false" text="방 제목" />

@@ -329,9 +329,10 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(2, from.getId());
 		pstmt.setString(3, from.getId());
 		pstmt.setString(4, to.getId());
+		int i = pstmt.executeUpdate();
 		pstmt.close();
 
-		return (pstmt.executeUpdate() == 2);
+		return i== 2;
 	}
 
 	public boolean friendCheck(Member from, Member to) throws SQLException {
@@ -374,9 +375,10 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(2, to.getId());
 		pstmt.setString(3, to.getId());
 		pstmt.setString(4, from.getId());
+		int i  = pstmt.executeUpdate();
 		pstmt.close();
 
-		return pstmt.executeUpdate() == 2;
+		return i == 2;
 	}
 	
 }

@@ -17,7 +17,7 @@
       </Label>
    </top>
    <bottom>
-      <FlowPane alignment="CENTER" hgap="80.0" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <FlowPane alignment="CENTER" hgap="70.0" prefHeight="50.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="toggle" mnemonicParsing="false" onAction="#toggle" prefHeight="40.0" prefWidth="115.0" text="서버 시작">
                <FlowPane.margin>
@@ -28,7 +28,7 @@
                   <Insets />
                </FlowPane.margin>
             </Button>
-            <Button fx:id="exit" mnemonicParsing="false" onAction="#exit" prefHeight="40.0" prefWidth="115.0" text="프로그램 종료">
+            <Button fx:id="exit" mnemonicParsing="false" onAction="#exit" prefHeight="40.0" prefWidth="130.0" text="프로그램 종료">
                <FlowPane.margin>
                   <Insets />
                </FlowPane.margin></Button>

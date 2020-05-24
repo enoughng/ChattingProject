@@ -10,33 +10,33 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 
-<BorderPane fx:id="chatMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../util/CommonCSS.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="yeong.chatting.client.chattingroom.ChattingRoomController">
+<BorderPane fx:id="chatMain" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="800.0" stylesheets="@../util/CommonCSS.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="yeong.chatting.client.chattingroom.ChattingRoomController">
    <right>
-      <FlowPane prefHeight="308.0" prefWidth="120.0" vgap="10.0" BorderPane.alignment="CENTER">
+      <FlowPane prefHeight="308.0" prefWidth="220.0" vgap="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefWidth="150.0" text="방 접속자 수" />
-            <ListView fx:id="memberList" prefHeight="210.0" prefWidth="150.0" />
-            <Button fx:id="invite" mnemonicParsing="false" onAction="#invite" prefHeight="20.0" prefWidth="150.0" text="초대" />
+            <Label alignment="CENTER" prefWidth="210.0" text="방 접속자 수" />
+            <ListView fx:id="memberList" prefHeight="320.0" prefWidth="210.0" />
+            <Button fx:id="invite" mnemonicParsing="false" onAction="#invite" prefHeight="20.0" prefWidth="210.0" text="초대" />
          </children>
       </FlowPane>
    </right>
    <center>
       <FlowPane orientation="VERTICAL" vgap="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="15.0" prefWidth="385.0" text="채팅창" />
-            <TextArea fx:id="ChattingLog" editable="false" prefHeight="250.0" prefWidth="398.0" wrapText="true" />
+            <Label alignment="CENTER" prefHeight="15.0" prefWidth="510.0" text="채팅창" />
+            <TextArea fx:id="ChattingLog" editable="false" prefHeight="366.0" prefWidth="510.0" wrapText="true" />
          </children>
       </FlowPane>
    </center>
    <bottom>
       <FlowPane alignment="CENTER_LEFT" hgap="10.0" prefHeight="52.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="whisper" prefHeight="29.0" prefWidth="100.0" />
-            <TextField fx:id="chat" prefHeight="30.0" prefWidth="245.0" />
+            <ComboBox fx:id="whisper" prefHeight="29.0" prefWidth="150.0" />
+            <TextField fx:id="chat" prefHeight="33.0" prefWidth="304.0" />
             <Button fx:id="sendBtn" mnemonicParsing="false" onAction="#send" prefWidth="50.0" text="전송" />
             <Button fx:id="exitBtn" mnemonicParsing="false" onAction="#exit" text="나가기">
                <FlowPane.margin>
-                  <Insets left="70.0" />
+                  <Insets left="150.0" />
                </FlowPane.margin>
             </Button>
          </children>

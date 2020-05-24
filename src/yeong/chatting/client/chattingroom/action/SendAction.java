@@ -29,7 +29,5 @@ public class SendAction implements CommonAction{
 			e.printStackTrace();
 		}
 		
-		
-		
 	}
 }

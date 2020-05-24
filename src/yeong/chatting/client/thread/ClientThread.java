@@ -133,6 +133,7 @@ public class ClientThread implements Runnable {
 		case RESPONSE_ENTERROOM_SUCCESS:
 			ClientInfo.currentRoom = message.getrInfo();
 			try { setChattingRoom(message); } catch (IOException e) { Log.e(getClass(), e);}
+			
 			break;
 		case RESPONSE_EXITROOM:
 			ClientInfo.currentRoom = null;
@@ -439,7 +440,13 @@ public class ClientThread implements Runnable {
 				updateFriendList(message.getResponseFriendList());				
 			});
 			break;
-
+		case RESPONSE_ENTER_EXIT_MESSAGE:
+			ChattingRoomController con = ChattingRoomController.getController();
+			if(message.getMsg().equals("N"))
+				con.exit(message.getFrom());
+			else
+				con.enter(message.getFrom());
+			break;
 		default:
 		}
 	}
