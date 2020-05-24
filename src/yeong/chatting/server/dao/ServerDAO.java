@@ -39,6 +39,7 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(3, member.getName());
 		pstmt.setString(4, member.getEmail());
 		pstmt.executeUpdate();
+		pstmt.close();
 	}
 
 	/**
@@ -58,6 +59,8 @@ public class ServerDAO extends CommonDao{
 			loginMember.setEmail(rs.getString("email"));
 			loginMember.setIsLogin(rs.getString("LOGIN_YN"));
 		}
+		pstmt.close();
+
 		return loginMember;
 	}
 	/**
@@ -93,6 +96,8 @@ public class ServerDAO extends CommonDao{
 			rInfo.setChk(chk);
 			rInfo.setRoom_members(ServerThread.roomMemberList.size());
 		}
+		pstmt.close();
+
 		return rInfo; 
 	}
 	/**
@@ -123,6 +128,7 @@ public class ServerDAO extends CommonDao{
 
 			rooms.add(rInfo);
 		}
+		pstmt.close();
 		return rooms;
 	}
 
@@ -144,7 +150,7 @@ public class ServerDAO extends CommonDao{
 			RoomInfo DBroomInfo = new RoomInfo(index, title, password, host, (rSecret.equals("Y"))? true : false);
 			checkedRoomInfo = DBroomInfo;
 		}
-
+		pstmt.close();
 		return checkedRoomInfo;
 	}
 
@@ -153,6 +159,7 @@ public class ServerDAO extends CommonDao{
 		pstmt.setInt(1, info.getRoom_num());
 		pstmt.setString(2, info.getRoom_host());
 		pstmt.executeUpdate();
+		pstmt.close();
 	}
 
 	public void deleteRooms() throws SQLException {
@@ -174,6 +181,7 @@ public class ServerDAO extends CommonDao{
 		while(rs.next()) {
 			id = rs.getString("id");
 		}
+		pstmt.close();
 		return id;
 	}
 
@@ -186,8 +194,10 @@ public class ServerDAO extends CommonDao{
 
 		int result = pstmt.executeUpdate();
 		if(result==1) {
+			pstmt.close();
 			return true;
 		} else {
+			pstmt.close();
 			return false;
 		}
 	}
@@ -195,6 +205,7 @@ public class ServerDAO extends CommonDao{
 	public void UpdateLogoutAll() throws SQLException {
 		PreparedStatement pstmt = openConnection("UpdateLogoutAll");
 		pstmt.executeUpdate();
+		pstmt.close();
 	}
 
 	//	public Map<Integer, Vector<Member>> initMap(Map<Integer, Vector<Member>> map) {
@@ -216,7 +227,7 @@ public class ServerDAO extends CommonDao{
 		while(rs.next()) {
 			newValue.setId(rs.getString("id"));
 		}
-
+		pstmt.close();
 		return newValue;
 	}
 
@@ -233,7 +244,7 @@ public class ServerDAO extends CommonDao{
 		while(rs.next()) {
 			newValue.setPassword(rs.getString("password"));
 		}
-
+		pstmt.close();
 		return newValue;
 	}
 
@@ -253,7 +264,7 @@ public class ServerDAO extends CommonDao{
 			insertProfile(to);
 			selectResult = selectProfile(to);
 		}
-
+		pstmt.close();
 		return selectResult;
 	}
 
@@ -275,6 +286,7 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(2, from.getId());
 		int index2 = pstmt.executeUpdate();
 
+		pstmt.close();
 
 		return (index+index2) == 2;
 	}
@@ -284,6 +296,7 @@ public class ServerDAO extends CommonDao{
 		PreparedStatement pstmt = openConnection("DeleteAccount");
 		pstmt.setString(1, from.getId());
 		int i = pstmt.executeUpdate();
+		pstmt.close();
 
 		return i==1;
 	}
@@ -303,6 +316,7 @@ public class ServerDAO extends CommonDao{
 		while(rs.next()) {
 			result = new Member(rs);
 		}
+		pstmt.close();
 
 		return result;
 	}
@@ -315,7 +329,8 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(2, from.getId());
 		pstmt.setString(3, from.getId());
 		pstmt.setString(4, to.getId());
-		
+		pstmt.close();
+
 		return (pstmt.executeUpdate() == 2);
 	}
 
@@ -329,7 +344,8 @@ public class ServerDAO extends CommonDao{
 		while(rs.next()) {
 			res = rs.getInt("friend_cnt");
 		}
-	
+		pstmt.close();
+
 		return (res==1);
 	}
 	
@@ -347,7 +363,8 @@ public class ServerDAO extends CommonDao{
 			Member m = new Member(id,password,name,email,loginYN);
 			list.add(m);
 		}
-		
+		pstmt.close();
+
 		return list;
 	}
 	
@@ -357,6 +374,8 @@ public class ServerDAO extends CommonDao{
 		pstmt.setString(2, to.getId());
 		pstmt.setString(3, to.getId());
 		pstmt.setString(4, from.getId());
+		pstmt.close();
+
 		return pstmt.executeUpdate() == 2;
 	}
 	
