@@ -47,13 +47,14 @@ public class ClientMain extends Application{
 	@Override
 	public void stop() throws Exception {
 		if(ClientInfo.currentRoom != null) {
+			
 			Message exitRequest = new Message(ProtocolType.REQUEST_EXITROOM, ClientInfo.currentMember, ClientInfo.currentRoom);
 			ThreadUtil.getOos().writeObject(exitRequest);
 			Thread.sleep(1000);
 			Message logoutRequest = new Message(ProtocolType.REQUEST_LOGOUT, ClientInfo.currentMember);
 			ThreadUtil.getOos().writeObject(logoutRequest);				
 		}  else if(ClientInfo.currentMember != null){
-			Log.i("currentMember : " + ClientInfo.currentMember);
+			
 			Message logoutRequest = new Message(ProtocolType.REQUEST_LOGOUT, ClientInfo.currentMember);
 			ThreadUtil.getOos().writeObject(logoutRequest);			
 		}

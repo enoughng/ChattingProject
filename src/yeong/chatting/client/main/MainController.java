@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.action.CommonAction;
@@ -37,6 +38,9 @@ import yeong.chatting.util.Log;
  */
 public class MainController extends BaseController {
 
+	@FXML
+	GridPane main;
+	
 	// 각 컨트롤 정의
 	@FXML
 	TextField idTf;

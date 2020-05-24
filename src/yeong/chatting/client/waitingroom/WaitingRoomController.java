@@ -3,18 +3,23 @@ package yeong.chatting.client.waitingroom;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.util.Callback;
 import yeong.chatting.client.base.action.ActionInfo;
 import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.util.ClientInfo;
@@ -35,8 +40,8 @@ import yeong.chatting.util.Log;
 public class WaitingRoomController extends BaseController {
 
 	@FXML TableView<RoomInfo> roomList;
+	@FXML TableView<Member> friendList;
 	@FXML ListView<Member> memberList;
-	@FXML ListView<Member> friendList;
 
 	@FXML Button createBtn;
 	@FXML Button enterBtn;
@@ -51,10 +56,9 @@ public class WaitingRoomController extends BaseController {
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
 		con = this;
-		initListView(memberList, members,0);
-		initListView(friendList, friends,1);
+		initListView();
 		initTableView();
-
+		friendTableViewSetting();
 	}
 
 	@FXML
@@ -101,10 +105,13 @@ public class WaitingRoomController extends BaseController {
 		members.clear(); 
 		members.addAll(list);
 	}
-	
+
 	public void setFriendView(ObservableList<Member> list ) {
-		Log.i("!" + list);
-		friends.setAll(list);
+		
+		Log.i(getClass(), list);
+		friends.clear();
+		friends.addAll(list);
+		Log.i(getClass(), members + "!");
 	}
 
 	/**
@@ -123,18 +130,18 @@ public class WaitingRoomController extends BaseController {
 	/**
 	 * ListView客 ObservableList<Member> 楷搬
 	 */
-	private void initListView(ListView<Member> memberList,ObservableList<Member> members, int i) {
+	private void initListView() {
 		members = FXCollections.observableArrayList();
 		memberList.setItems(members);
 		memberList.setOnMouseClicked(event -> {
 			String eventTarget = event.getTarget().toString();
 			if(eventTarget.substring(eventTarget.length()-6, eventTarget.length()).contains("'null'")) {
-				 memberList.getSelectionModel().clearSelection();
-				 return;
+				memberList.getSelectionModel().clearSelection();
+				return;
 			}
 			if(event.getClickCount() == 2) {
-				 ActionInfo action = new ActionInfo("PopupProfile",memberList,CommonPathAddress.MyProfileLayout);
-				 if(memberList.getSelectionModel().getSelectedItem().equals(ClientInfo.currentMember)) {
+				ActionInfo action = new ActionInfo("PopupProfile",memberList,CommonPathAddress.MyProfileLayout);
+				if(memberList.getSelectionModel().getSelectedItem().equals(ClientInfo.currentMember)) {
 					action.setUserDatas("My", memberList.getSelectionModel().getSelectedItem());
 				} else {
 					action.setUserDatas("", memberList.getSelectionModel().getSelectedItem());					
@@ -142,14 +149,63 @@ public class WaitingRoomController extends BaseController {
 				action(action);
 			}
 		});
-		if(i==0) {
-			this.memberList = memberList;
-			this.members = members;
-		} else {
-			this.friendList = memberList;
-			this.friends = members;
-		}
+	}
+
+	private void friendTableViewSetting() {
+		friends = FXCollections.observableArrayList();
+		friendList.setItems(friends);
 		
+		TableColumn<Member, String> c1 = new TableColumn<Member, String>("ID");
+		TableColumn<Member, String> c2 = new TableColumn<Member, String>("NAME");
+		TableColumn<Member, String> c3 = new TableColumn<Member, String>("STATUS");
+		
+		c1.setCellValueFactory(new PropertyValueFactory<Member, String>("id"));
+		c2.setCellValueFactory(new PropertyValueFactory<Member, String>("name"));
+		c3.setCellValueFactory(new PropertyValueFactory<Member, String>("isLogin"));
+		
+		c1.prefWidthProperty().bind(friendList.prefWidthProperty().multiply(0.2));
+		c2.prefWidthProperty().bind(friendList.prefWidthProperty().multiply(0.35));
+		c3.prefWidthProperty().bind(friendList.prefWidthProperty().multiply(0.45));
+		
+		c3.setCellFactory(new Callback<TableColumn<Member,String>, TableCell<Member,String>>() {
+			@Override
+			public TableCell<Member, String> call(TableColumn<Member, String> param) {
+				TableCell<Member, String> cell = new TableCell<Member, String>() {
+					@Override
+					protected void updateItem(String item, boolean empty) {
+						if(item!=null && !empty) {
+							if(item.equals("Y")) {
+								setText("[立加吝]");
+							} else {
+								setText("[固立加]");
+							}
+						} else { // update
+							setText(null);
+						}
+					}
+				};
+				return cell;
+			}
+		});
+		
+		friendList.getColumns().setAll(c1,c2,c3);
+		
+		friendList.setOnMouseClicked(event -> {
+			String eventTarget = event.getTarget().toString();
+			if(eventTarget.substring(eventTarget.length()-6, eventTarget.length()).contains("'null'")) {
+				friendList.getSelectionModel().clearSelection();
+				return;
+			}
+			if(event.getClickCount() == 2) {
+				ActionInfo action = new ActionInfo("PopupProfile",friendList,CommonPathAddress.MyProfileLayout);
+				if(friendList.getSelectionModel().getSelectedItem().equals(ClientInfo.currentMember)) {
+					action.setUserDatas("My", friendList.getSelectionModel().getSelectedItem());
+				} else {
+					action.setUserDatas("", friendList.getSelectionModel().getSelectedItem());					
+				}
+				action(action);
+			}
+		});
 	}
 
 
@@ -179,7 +235,12 @@ public class WaitingRoomController extends BaseController {
 		roomList.getColumns().setAll(rIndex, rTitle, rMembers, rHost);
 
 		roomList.setOnMouseClicked( event -> {
-			if(event.getClickCount() > 1)
+			String eventTarget = event.getTarget().toString();
+			if(eventTarget.substring(eventTarget.length()-6, eventTarget.length()).contains("'null'")) {
+				roomList.getSelectionModel().clearSelection();
+				return;
+			}
+			if(event.getClickCount() == 2)
 				enterBtn.fire();
 		});
 	}

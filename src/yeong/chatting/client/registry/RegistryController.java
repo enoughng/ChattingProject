@@ -133,8 +133,6 @@ public class RegistryController extends BaseController{
 		Task<String> task = new Task<String>() {
 			@Override
 			protected String call() throws Exception {
-				Log.i(password.getText());
-				Log.i(passwordCheck.getText());
 				if(password.getText().equals(passwordCheck.getText())) {
 					updateMessage("비밀번호 일치");
 					passCheck = true;

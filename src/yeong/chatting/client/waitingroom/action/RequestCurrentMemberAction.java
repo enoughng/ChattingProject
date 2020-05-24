@@ -36,6 +36,5 @@ public class RequestCurrentMemberAction implements CommonAction{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.i(getClass(),"¾×¼Ç ½ÇÇàµÊ");
 	}
 }

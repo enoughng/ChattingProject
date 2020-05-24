@@ -45,7 +45,6 @@ public class CreateRoomController extends BaseController {
 	
 	@FXML
 	private void cancel() {
-		Log.i("cancel()");
 		ClientInfo.currentMember.setPlace(Place.WaitingRoom);
 		action(new ActionInfo("Cancel", cancelBtn, CommonPathAddress.WaitingRoomLayout));
 	}

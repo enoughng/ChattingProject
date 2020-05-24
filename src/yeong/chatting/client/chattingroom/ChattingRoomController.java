@@ -1,6 +1,5 @@
 package yeong.chatting.client.chattingroom;
 
-import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,10 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 import yeong.chatting.client.base.action.ActionInfo;
-import yeong.chatting.client.base.action.FormAction;
-import yeong.chatting.client.base.action.GoAction;
 import yeong.chatting.client.base.controller.BaseController;
 import yeong.chatting.client.util.ClientInfo;
 import yeong.chatting.client.util.Place;
@@ -131,8 +127,6 @@ public class ChattingRoomController extends BaseController{
 
 		
 		if(m.equals(ClientInfo.currentMember)) {
-			Log.i(getClass(), m);
-			Log.i(getClass(), ClientInfo.currentMember);
 			sb.append("[");
 			sb.append(time);
 			sb.append("] ");
@@ -195,11 +189,10 @@ public class ChattingRoomController extends BaseController{
 							if(item.getId().equals(ClientInfo.currentRoom.getRoom_host())) {
 								setText(sb.toString());
 							} else {
-								Log.i(getClass(), "¾÷µ¥ÀÌÆ® µÊ");
 								setText(item.toString());
 							} 
 						} else {
-							setText("");
+							setText(null);
 						}
 					}
 				};

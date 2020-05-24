@@ -24,11 +24,7 @@ public class SecretSendAction implements CommonAction {
 		
 		ProtocolType requestProtocol  = ProtocolType.REQUEST_WHISPER;
 		Member to = box.getSelectionModel().getSelectedItem();
-		
-		Log.i(getClass(), listView.getItems() + "*");
-		Log.i(to.toString());
-		
-		
+
 		String msg = chat.getText();
 		if(msg.equals("")) return;
 		RoomInfo rinfo = ClientInfo.currentRoom;

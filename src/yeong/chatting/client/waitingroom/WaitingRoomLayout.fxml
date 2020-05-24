@@ -40,7 +40,12 @@
                                     <Insets bottom="5.0" top="10.0" />
                                  </padding>
                               </Label>
-                              <ListView fx:id="friendList" prefHeight="255.0" prefWidth="200.0" />
+                              <TableView fx:id="friendList" prefHeight="267.0" prefWidth="200.0">
+                                <columns>
+                                  <TableColumn prefWidth="75.0" text="C1" />
+                                  <TableColumn prefWidth="75.0" text="C2" />
+                                </columns>
+                              </TableView>
                            </children>
                         </FlowPane>
                      </content>

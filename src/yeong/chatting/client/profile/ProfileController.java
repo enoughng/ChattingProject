@@ -17,6 +17,7 @@ import yeong.chatting.util.Log;
 
 public class ProfileController extends BaseController{
 
+	@FXML Label profileTitle;
 	@FXML Label nickname;
 	@FXML Label id;
 	@FXML TextArea introduce;
@@ -44,7 +45,6 @@ public class ProfileController extends BaseController{
 		} else {
 			ActionInfo removeAction = new ActionInfo("RemoveFriend", add);
 			removeAction.setUserDatas(id.getText());
-			Log.i(id.getText()+"!!!!!!!");
 			action(removeAction);
 		}
 	}

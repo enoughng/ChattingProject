@@ -56,7 +56,7 @@ public class ServerDAO extends CommonDao{
 			loginMember.setPassword(rs.getString("password"));
 			loginMember.setName(rs.getString("name"));
 			loginMember.setEmail(rs.getString("email"));
-			loginMember.setLogin(rs.getString("LOGIN_YN"));
+			loginMember.setIsLogin(rs.getString("LOGIN_YN"));
 		}
 		return loginMember;
 	}
@@ -252,7 +252,6 @@ public class ServerDAO extends CommonDao{
 		if(selectResult == null) {
 			insertProfile(to);
 			selectResult = selectProfile(to);
-			Log.i(getClass(),"½ÇÇàµÊ");
 		}
 
 		return selectResult;

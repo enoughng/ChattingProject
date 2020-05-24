@@ -69,14 +69,14 @@ public class Member implements Serializable{
 	
 	
 	
-	public String getLogin() {
+	public String getIsLogin() {
 		return isLogin;
 	}
 
-	public void setLogin(String isLogin) {
+	public void setIsLogin(String isLogin) {
 		this.isLogin = isLogin;
 	}
-	
+
 	public Place isWaitingRoom() {
 		return place;
 	}

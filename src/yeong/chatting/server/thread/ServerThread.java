@@ -84,14 +84,7 @@ public class ServerThread extends Thread{
 			for(int i=0;i<serverThreads.size();i++) {
 				serverThreads.get(i).send(new Message(ProtocolType.CLOSE, new Member("Server",null,null)));
 				serverThreads.remove(serverThreads.get(i));
-				Log.i(serverThreads.toString());
 			}
-//				for(InputThread t :serverThreads) {
-//				}
-			
-
-
-
 
 		} catch (IOException e) {
 			e.printStackTrace();

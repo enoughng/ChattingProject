@@ -68,7 +68,6 @@ public class InviteController extends BaseController {
 	}
 	
 	public void setListView(ObservableList<Member> memberList) {
-		Log.i(getClass(), memberList.toString());
 		this.memberList.setAll(memberList);
 	}
 	

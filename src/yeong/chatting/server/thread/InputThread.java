@@ -75,7 +75,6 @@ public class InputThread implements Runnable {
 					send(response);
 				}
 
-				Log.i(getClass(),response.getProtocol());
 				switch (response.getProtocol()) {
 				case RESPONSE_CREATEROOM:
 					updateWaitingRoom(request);
@@ -85,7 +84,6 @@ public class InputThread implements Runnable {
 					updateWaitingRoom(request);
 					break;
 				case RESPONSE_EXITROOM:
-					Log.i(getClass(), "나가기 발생");
 					updateChattingRoom(request);
 					updateWaitingRoom(request);
 					break;
@@ -120,6 +118,10 @@ public class InputThread implements Runnable {
 				case RESPONSE_ADD_FRIEND_RESPONSE:
 				case RESPONSE_REMOVE_FRIEND:
 					chattingRoomWhisper(response);
+					break;
+				case RESPONSE_LOGIN_SUCCESS:
+				case RESPONSE_LOGOUT:
+					updateFriendListMember(response);
 					break;
 				default:
 				}
@@ -167,6 +169,35 @@ public class InputThread implements Runnable {
 	public void setCurrentID(String ID) {
 		currentMemberID = ID;
 	}
+	
+	
+	
+	/**
+	 * 현재 접속해있는 멤버의 친구목록을 업데이트 시키는 구문이다.
+	 * @throws SQLException 
+	 * @throws IOException 
+	 */
+	private void updateFriendListMember(Message msg) throws SQLException, IOException {
+		Vector<Member> friendList = msg.getFriendList();
+		Log.i("friendList"+friendList);
+		for(Member m :friendList) {
+			if(m.getIsLogin().equals("Y")) {
+				Log.i(m + " Y발견");
+				for(InputThread t :ServerThread.serverThreads) {
+					if(t.currentMemberID.equals(m.getId())) {
+						Log.i(t.currentMemberID+ " 에게 response");
+						Vector<Member> friendResponseList = sDao.friendList(m);
+						msg.setResponseFriendList(friendResponseList);
+						Log.i(friendResponseList + "가 보내짐");
+						msg.setProtocol(ProtocolType.UPDATE_FRIEND_LIST);
+						t.send(msg);
+					}
+				}
+			}
+		}
+	}
+	
+	
 
 	/**
 	 * 자기자신을 제외한 같은방의 모든 멤버에게 보내라

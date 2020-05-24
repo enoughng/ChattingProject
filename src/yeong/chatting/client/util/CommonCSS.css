@@ -1,0 +1,27 @@
+TextField {
+	-fx-font-family:"Malgun Gothic";
+}
+
+Label {
+	-fx-font-family:"Malgun Gothic";
+	-fx-font-weight:bold;
+}
+
+#profileTitle {
+	-fx-font-family:"Malgun Gothic";
+	-fx-font-size:30px;
+	-fx-font-weight:bold;
+}
+
+TableView {
+	-fx-font-family:"Malgun Gothic";
+	-fx-font-size:12px;
+}
+
+Button {
+	-fx-text-fill: white;
+    -fx-font-family: "Malgun Gothic";
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}

@@ -2,6 +2,7 @@ package yeong.chatting.client.profile;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,6 +20,10 @@ import yeong.chatting.util.Log;
 
 public class MyProfileController extends BaseController{
 		
+	@FXML FlowPane main;
+	
+	
+	@FXML Label profileTitle;
 	@FXML TextField nickname;
 	@FXML TextField id;
 	@FXML TextArea introduce;

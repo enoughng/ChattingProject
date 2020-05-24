@@ -29,8 +29,6 @@ public class CreateRoomAction implements CommonAction {
 		
 		Message request;
 		
-		Log.i(getClass(), "*" + ClientInfo.currentMember);
-		
 		TextField id = (TextField)info.getCons()[0];
 		PasswordField pw = (PasswordField)info.getCons()[1];
 		CheckBox chk = (CheckBox)info.getCons()[2];

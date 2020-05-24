@@ -163,7 +163,7 @@ public class RequestCheck {
 		Message response;
 		ProtocolType responseProtocol;
 		Member loginMember = sDao.checkLogin(request.getFrom()); // DB 조회한 멤버
-		if (loginMember != null && loginMember.getLogin().equals("N")) { // 조회한 멤버가 있으면서 그 멤버가 로그인한 상태가 아니라면
+		if (loginMember != null && loginMember.getIsLogin().equals("N")) { // 조회한 멤버가 있으면서 그 멤버가 로그인한 상태가 아니라면
 
 			sDao.updateLogin(loginMember, true);
 			t.setCurrentID(loginMember.getId()); // InputThread의 이름을 현재 로그인한 멤버의 ID로 설정한다.
@@ -171,7 +171,7 @@ public class RequestCheck {
 			ServerThread.memberList.add(loginMember); // 서버쓰레드에 있는 멤버리스트를 더해준다.
 			ServerThread.isLogout=false; // 서버쓰레드 로그인상태변수를 로그인상태로 만들어준다.
 			response = new Message(responseProtocol, loginMember); // 응답메시지를 만든다.
-
+			response.setFriendList(sDao.friendList(loginMember));
 			appendLog(loginMember.getId() + "(" + loginMember.getName() + ")님이 로그인 하셨습니다."); // 로그폼에 로그인을 띄워준다.
 		} else {
 			responseProtocol = ProtocolType.RESPONSE_LOGIN_FAIL;
@@ -193,7 +193,9 @@ public class RequestCheck {
 		ServerThread.memberList.remove(request.getFrom());
 		Message response = new Message(responseProtocol, request.getFrom());
 		response.setMemberList(new Vector<Member>(ServerThread.memberList));
-
+		Vector<Member> friendList = sDao.friendList(request.getFrom());
+		response.setFriendList(friendList);
+		
 		appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() +")"+ " 님이 로그아웃 하셨습니다.");
 		return  response;
 	}
@@ -491,17 +493,11 @@ public class RequestCheck {
 		response.setMsg(Boolean.toString(result));
 		response.setProfile(request.getProfile());
 
-		Log.i(getClass(), "MemberList : " + ServerThread.memberList);
-		Log.i(getClass(), "roomMemberList : " + ServerThread.roomMemberList);
-
-
 		return response;
 	}
 
 	private Message deleteAccount() throws SQLException {
-		Log.i(getClass(),"!"+"DB실행직전");
 		boolean result = sDao.deleteAccount(request.getFrom());
-		Log.i(getClass(),"!"+"실행후");
 		Message response = new Message(ProtocolType.RESPONSE_DELETE_ACCOUNT, request.getFrom());
 		if(result) {
 			response.setMsg("true");

@@ -17,7 +17,6 @@ import yeong.chatting.util.ProtocolType;
 public class WithdrawAction implements  CommonAction{
 	@Override
 	public void action(ActionInfo info) {
-		Log.i(getClass(),"회원탈퇴 버튼");
 		
 		Alert alert = new Alert(AlertType.WARNING, "정말 삭제하시곘습니까?");
 		alert.setContentText("아이디를 삭제하면 복구할 수 없습니다 ");

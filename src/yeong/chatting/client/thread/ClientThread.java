@@ -160,7 +160,6 @@ public class ClientThread implements Runnable {
 			}
 			break;
 		case RESPONSE_UPDATECHATTINGROOM:
-			Log.i("@@@" + message.getRoomMemberList());
 			if(ClientInfo.currentRoom == null) {
 				try { setWaitingRoom(message); } catch (IOException e) { e.printStackTrace(); }
 				return;
@@ -172,7 +171,12 @@ public class ClientThread implements Runnable {
 			}
 			break;
 		case CLOSE:
-			Log.i("서버를 닫았습니다.");
+			Platform.runLater( () -> {
+				Alert alert = new Alert(AlertType.ERROR, "서버가 닫혔습니다.");
+				alert.setTitle("서버가 닫혔습니다");
+				alert.setHeaderText("서버 에러");
+				alert.show();
+			});
 			System.exit(0);
 			break;
 
@@ -262,7 +266,6 @@ public class ClientThread implements Runnable {
 			break;
 
 		case RESPONSE_INVITEUPDATE:
-			Log.i(getClass(),"inviteUpdate");
 			Platform.runLater( () -> {
 				FXMLLoader loader = new FXMLLoader(ClientInfo.getResource(CommonPathAddress.InviteLayout));
 				Parent p=null;
@@ -275,7 +278,6 @@ public class ClientThread implements Runnable {
 				s.setScene(scene);
 				s.show();
 				InviteController inviteCon = InviteController.getCon();	/** 초대기능 ListView*/
-				Log.i(getClass(), "invite 실행");
 				ObservableList<Member> memberList = FXCollections.observableArrayList(message.getMemberList());
 				inviteCon.setListView(memberList);
 			});
@@ -357,7 +359,6 @@ public class ClientThread implements Runnable {
 		case RESPONSE_PROFILE_EDIT:
 			if(message.getMsg().equals("true")) {
 				ClientInfo.currentMember.setName(message.getProfile().getNickname());
-				Log.i("**"+ClientInfo.currentMember.getName());
 				Platform.runLater( () -> {
 					Alert alert = new Alert(AlertType.INFORMATION, "업데이트를 성공하였습니다.");
 					alert.setHeaderText("알림");
@@ -379,7 +380,6 @@ public class ClientThread implements Runnable {
 					Alert alert = new Alert(AlertType.INFORMATION, "지금까지 이용해 주셔서 감사합니다.");
 					alert.setContentText("계정이 성공적으로 삭제되었습니다.");
 					alert.show();
-					Log.i("여기까지 찍히나");
 					ClientInfo.currentMember.setPlace(Place.LoginLayout);
 					MyProfileController con = MyProfileController.getProfileController();
 					con.closeMyProfileController();
@@ -429,6 +429,11 @@ public class ClientThread implements Runnable {
 					alert.setHeaderText("삭제 실패");
 					alert.show();
 				}
+			});
+			break;
+		case UPDATE_FRIEND_LIST:
+			Platform.runLater( () -> {
+				updateFriendList(message.getResponseFriendList());				
 			});
 			break;
 
@@ -545,7 +550,6 @@ public class ClientThread implements Runnable {
 
 
 	private void updateFriendList(Vector<Member> list) {
-		Log.i(getClass() + "!!" + list);
 		WaitingRoomController con = WaitingRoomController.getController();
 		ObservableList<Member> oList = FXCollections.observableArrayList(list);
 		con.setFriendView(oList);
@@ -570,7 +574,8 @@ public class ClientThread implements Runnable {
 			Platform.runLater( () -> {
 				updateWaitingRoomList(message);				
 			});
-
+			
+		
 	}
 
 
@@ -614,7 +619,7 @@ public class ClientThread implements Runnable {
 		}
 
 		if(msg.getFriendList() != null && msg.getFrom().equals(ClientInfo.currentMember)) {
-			Log.i(getClass(),msg.getFriendList());
+			Log.i(ClientInfo.currentMember + "이 사람의 친구목록 갱신 : " + msg.getFriendList());
 			ObservableList<Member> friendList = FXCollections.observableArrayList(msg.getFriendList());
 			con.setFriendView(friendList);
 		}

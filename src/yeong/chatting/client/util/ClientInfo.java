@@ -33,19 +33,4 @@ public class ClientInfo {
 	}
 	
 	
-//	public static <T extends BaseController> T getController(URL url) {
-//		
-//		FXMLLoader loader = new FXMLLoader(url);
-//		try {
-//			loader.load();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			System.exit(0);
-//		}
-//		Log.i(loader.getLocation());
-//		T con = loader.getController();
-//		
-//		return con;
-//	}
 }
