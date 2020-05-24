@@ -189,17 +189,13 @@ public class ClientThread implements Runnable {
 					alert.getButtonTypes().setAll(t1);
 					alert.setHeaderText("°­Á¦ÅðÀå");
 					alert.show();
+					ClientInfo.currentRoom=null;
+					ClientInfo.currentMember.setPlace(Place.WaitingRoom);
+					GoAction.staticGo(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
+					updateWaitingRoomList(message);	
+					updateFriendList(message.getFriendList());
 				});
-				ClientInfo.currentRoom=null;
-				ClientInfo.currentMember.setPlace(Place.WaitingRoom);
-				GoThread goWaitingRoom = new GoThread(primaryStage, getClass().getResource(CommonPathAddress.WaitingRoomLayout));
-				Platform.runLater(goWaitingRoom);
-				if(ClientInfo.currentMember.getPlace() == Place.WaitingRoom)
-					Platform.runLater( () -> {
-						updateWaitingRoomList(message);				
-					});
-			}
-			catch(Exception e) {
+			} catch(Exception e) {
 				e.printStackTrace();
 			}
 			break;
@@ -333,7 +329,7 @@ public class ClientThread implements Runnable {
 
 					try { p = loader.load(); } catch (IOException e) { e.printStackTrace(); }
 					MyProfileController con = loader.getController();
-					
+
 					con.setProfile(message.getProfile());
 					Scene scene = new Scene(p);
 					Stage stage = new Stage();
@@ -574,8 +570,8 @@ public class ClientThread implements Runnable {
 			Platform.runLater( () -> {
 				updateWaitingRoomList(message);				
 			});
-			
-		
+
+
 	}
 
 

@@ -343,7 +343,9 @@ public class RequestCheck {
 		response = new Message(responseProtocol, request.getFrom(), new Vector<Member>(ServerThread.memberList)); // 멤버정보
 		response.setrInfo(new RoomInfo(DBrInfo)); 
 		Vector<RoomInfo> list = sDao.getRooms(); // 대기실 방정보 DB를 통해서 가져옴
+		Vector<Member> friendList =sDao.friendList(request.getFrom());
 		response.setRoomList(list); // 방정보 
+		response.setFriendList(friendList);
 		response.setRoomMemberList(new Vector<Member>(ServerThread.roomMemberList.get(DBrInfo.getRoom_num()))); // 들어가있는 방정보
 		return response;
 	}

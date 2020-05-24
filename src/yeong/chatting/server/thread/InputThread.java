@@ -34,7 +34,7 @@ public class InputThread implements Runnable {
 	private int inputThreadID;
 
 	// 현재 접속한 유저의 이름을 저장하기위한 변수
-	private String currentMemberID;
+	private String currentMemberID="";
 	
 	
 	// 로그찍기위한 MainController
@@ -201,8 +201,9 @@ public class InputThread implements Runnable {
 
 	/**
 	 * 자기자신을 제외한 같은방의 모든 멤버에게 보내라
+	 * @throws SQLException 
 	 */
-	private void exitBrokenRoom(Message response) throws IOException {
+	private void exitBrokenRoom(Message response) throws IOException, SQLException {
 		Vector<Member> roomMemberList = ServerThread.roomMemberList.get(response.getrInfo().getRoom_num());
 		for (Member m : roomMemberList) {
 			if (m.getId().equals(getCurrentID()))
@@ -212,6 +213,7 @@ public class InputThread implements Runnable {
 					response.setProtocol(ProtocolType.RESPONSE_FORCEDEXIT);
 					ServerThread.memberList.add(m);
 					response.setMemberList(new Vector<Member>(ServerThread.memberList));
+					response.setFriendList(sDao.friendList(m));
 					t.send(response);
 				}
 			}
