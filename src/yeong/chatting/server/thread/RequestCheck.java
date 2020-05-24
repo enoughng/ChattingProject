@@ -499,12 +499,14 @@ public class RequestCheck {
 	}
 
 	private Message deleteAccount() throws SQLException {
+		Vector<Member> friendList = sDao.friendList(request.getFrom());
 		boolean result = sDao.deleteAccount(request.getFrom());
 		Message response = new Message(ProtocolType.RESPONSE_DELETE_ACCOUNT, request.getFrom());
 		if(result) {
 			response.setMsg("true");
 			appendLog(request.getFrom().getId() + "(" + request.getFrom().getName() + ")님이 계정을 삭제하셨습니다.");
 		}
+		response.setFriendList(friendList);
 		return response;
 	}
 

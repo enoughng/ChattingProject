@@ -123,6 +123,9 @@ public class InputThread implements Runnable {
 				case RESPONSE_LOGOUT:
 					updateFriendListMember(response);
 					break;
+				case RESPONSE_DELETE_ACCOUNT:
+					updateFriendListMember(response);
+					break;
 				default:
 				}
 
